@@ -76,7 +76,16 @@ public class Parser {
         }
     }
     private SyntaxNode parsePROC_DEFS(){
-        return null;
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "PROC");
+        if(input.equals("proc")){
+            res.addChild(parsePROC());
+            if(!input.equals("$")){
+                res.addChild(parsePROC());
+            }
+            return res;
+        }else{
+            return null;
+        }
     }
     private SyntaxNode parsePROC(){
         return null;
