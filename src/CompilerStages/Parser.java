@@ -26,7 +26,6 @@ public class Parser {
         return "Back to doing fuck-all";
     }
 
-
     private void match(TokenNode expected){
         if(input.equals(expected)){
             input = input.getNext();
@@ -35,6 +34,7 @@ public class Parser {
             System.exit(-1);
         }
     }
+
     private SyntaxNode parsePROGPRIME(){
         return null;
     }
