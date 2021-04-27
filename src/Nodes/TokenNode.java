@@ -37,6 +37,14 @@ public class TokenNode {
         return (n.tokenType.name().equals(this.tokenType.name()) && n.Data.equals(this.getData()));
     }
 
+    public boolean equals(String dat){
+        return this.getData() == dat;
+    }
+
+    public boolean equals(Type t){
+        return tokenType == t;
+    }
+
     public Type getTokenType() {
         return tokenType;
     }

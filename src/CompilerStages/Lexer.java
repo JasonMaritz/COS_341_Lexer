@@ -41,79 +41,79 @@ public class Lexer {
             }
             switch (s){
                 case "[TOKEN_EQ]->":
-                    nodeAdd(TokenNode.Type.EQ, "");
+                    nodeAdd(TokenNode.Type.EQ, "eq");
                     break;
                 case "[TOKEN_AND]->":
-                    nodeAdd(TokenNode.Type.AND, "");
+                    nodeAdd(TokenNode.Type.AND, "and");
                     break;
                 case "[TOKEN_OR]->":
-                    nodeAdd(TokenNode.Type.OR, "");
+                    nodeAdd(TokenNode.Type.OR, "or");
                     break;
                 case "[TOKEN_NOT]->":
-                    nodeAdd(TokenNode.Type.NOT, "");
+                    nodeAdd(TokenNode.Type.NOT, "not");
                     break;
                 case "[TOKEN_ADD]->":
-                    nodeAdd(TokenNode.Type.ADD, "");
+                    nodeAdd(TokenNode.Type.ADD, "add");
                     break;
                 case "[TOKEN_MULT]->":
-                    nodeAdd(TokenNode.Type.MULT, "");
+                    nodeAdd(TokenNode.Type.MULT, "mult");
                     break;
                 case "[TOKEN_SUB]->":
-                    nodeAdd(TokenNode.Type.SUB, "");
+                    nodeAdd(TokenNode.Type.SUB, "sub");
                     break;
                 case "[TOKEN_IF]->":
-                    nodeAdd(TokenNode.Type.IF, "");
+                    nodeAdd(TokenNode.Type.IF, "if");
                     break;
                 case "[TOKEN_THEN]->":
-                    nodeAdd(TokenNode.Type.THEN, "");
+                    nodeAdd(TokenNode.Type.THEN, "then");
                     break;
                 case "[TOKEN_ELSE]->":
-                    nodeAdd(TokenNode.Type.ELSE, "");
+                    nodeAdd(TokenNode.Type.ELSE, "else");
                     break;
                 case "[TOKEN_WHILE]->":
-                    nodeAdd(TokenNode.Type.WHILE, "");
+                    nodeAdd(TokenNode.Type.WHILE, "while");
                     break;
                 case "[TOKEN_FOR]->":
-                    nodeAdd(TokenNode.Type.FOR, "");
+                    nodeAdd(TokenNode.Type.FOR, "for");
                     break;
                 case "[TOKEN_INPUT]->":
-                    nodeAdd(TokenNode.Type.INPUT, "");
+                    nodeAdd(TokenNode.Type.INPUT, "input");
                     break;
                 case "[TOKEN_OUTPUT]->":
-                    nodeAdd(TokenNode.Type.OUTPUT, "");
+                    nodeAdd(TokenNode.Type.OUTPUT, "output");
                     break;
                 case "[TOKEN_HALT]->":
-                    nodeAdd(TokenNode.Type.HALT, "");
+                    nodeAdd(TokenNode.Type.HALT, "halt");
                     break;
                 case "[TOKEN_PROC]->":
-                    nodeAdd(TokenNode.Type.PROC, "");
+                    nodeAdd(TokenNode.Type.PROC, "proc");
                     break;
                 case "[TOKEN_GREATCOMP]->":
-                    nodeAdd(TokenNode.Type.GREATCOMP, "");
+                    nodeAdd(TokenNode.Type.GREATCOMP, ">");
                     break;
                 case "[TOKEN_LESSCOMP]->":
-                    nodeAdd(TokenNode.Type.LESSCOMP, "");
+                    nodeAdd(TokenNode.Type.LESSCOMP, "<");
                     break;
                 case "[TOKEN_LPAREN]->":
-                    nodeAdd(TokenNode.Type.LPAREN, "");
+                    nodeAdd(TokenNode.Type.LPAREN, "(");
                     break;
                 case "[TOKEN_RPAREN]->":
-                    nodeAdd(TokenNode.Type.RPAREN, "");
+                    nodeAdd(TokenNode.Type.RPAREN, ")");
                     break;
                 case "[TOKEN_LBRACE]->":
-                    nodeAdd(TokenNode.Type.LBRACE, "");
+                    nodeAdd(TokenNode.Type.LBRACE, "{");
                     break;
                 case "[TOKEN_RBRACE]->":
-                    nodeAdd(TokenNode.Type.RBRACE, "");
+                    nodeAdd(TokenNode.Type.RBRACE, "}");
                     break;
                 case "[TOKEN_COMMA]->":
-                    nodeAdd(TokenNode.Type.COMMA, "");
+                    nodeAdd(TokenNode.Type.COMMA, ",");
                     break;
                 case "[TOKEN_SEMICOLON]->":
-                    nodeAdd(TokenNode.Type.SEMICOLON, "");
+                    nodeAdd(TokenNode.Type.SEMICOLON, ";");
                     break;
                 case "[TOKEN_ASSIGN]->":
-                    nodeAdd(TokenNode.Type.ASSIGN, "");
+                    nodeAdd(TokenNode.Type.ASSIGN, "=");
                     break;
                 default:
                     String dfaMatching;

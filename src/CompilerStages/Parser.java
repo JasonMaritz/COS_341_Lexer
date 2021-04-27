@@ -36,7 +36,14 @@ public class Parser {
     }
 
     private SyntaxNode parsePROGPRIME(){
-        return null;
+        if(input.equals("halt")||input.equals("input")||input.equals("output")||input.equals(TokenNode.Type.VARNAME)||
+                input.equals("if")||input.equals("for")|| input.equals("while")){
+            SyntaxNode res = parsePROG();
+            match(new TokenNode(TokenNode.Type.EOF, "$"));
+            return res;
+        }else{
+            return null;
+        }
     }
     private SyntaxNode parsePROG(){
         return null;
