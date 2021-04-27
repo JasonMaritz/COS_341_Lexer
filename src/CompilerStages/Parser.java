@@ -104,7 +104,22 @@ public class Parser {
         return res;
     }
     private SyntaxNode parseINSTR(){
-        return null;
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "INSTR");
+        if(input.equals("halt")){
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, "halt"));
+            match(input);
+        }else if(input.equals("input")||input.equals("output")){
+            res.addChild(parseIO());
+        }else if(input.equals(TokenNode.Type.VARNAME)&&input.getNext().equals("=")){
+            res.addChild(parseASSIGN());
+        }else if(input.equals(TokenNode.Type.VARNAME)){
+            res.addChild(parseCALL());
+        }else if(input.equals("if")){
+            res.addChild(parseBRANCH());
+        }else{
+            res.addChild(parseLOOP());
+        }
+        return res;
     }
     private SyntaxNode parseIO(){
         SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "IO");
