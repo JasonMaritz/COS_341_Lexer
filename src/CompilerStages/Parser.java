@@ -164,7 +164,16 @@ public class Parser {
         return res;
     }
     private SyntaxNode parseNUMEXPR(){
-        return null;
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "NUMEXPR");
+        if(input.equals(TokenNode.Type.INTEGER)){
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, input.getData()));
+            match(input);
+        }else if(input.equals(TokenNode.Type.VARNAME)){
+            res.addChild(parseVAR());
+        }else{
+            res.addChild(parseCALC());
+        }
+        return res;
     }
     private SyntaxNode parseCALC(){
         SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "CALC");
