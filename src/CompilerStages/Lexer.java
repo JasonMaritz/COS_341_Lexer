@@ -138,6 +138,10 @@ public class Lexer {
                     }
             }
         }
+        TokenNode newHead = new TokenNode(TokenNode.Type.PSEUDOSTART, "PROG'");
+        newHead.setNext(head);
+        head.addNode(new TokenNode(TokenNode.Type.EOF, "$"));
+        head = newHead;
         return head;
     }
 

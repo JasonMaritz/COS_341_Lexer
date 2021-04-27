@@ -5,7 +5,7 @@ public class TokenNode {
     public enum Type{
         LEXERERROR, STRING, INTEGER, VARNAME, EQ, AND, OR, NOT, ADD, MULT, SUB, IF, THEN, ELSE,
         WHILE, FOR, INPUT, OUTPUT, HALT, PROC, GREATCOMP, LESSCOMP, LPAREN, RPAREN, LBRACE,
-        RBRACE, COMMA, SEMICOLON, ASSIGN
+        RBRACE, COMMA, SEMICOLON, ASSIGN, EOF, PSEUDOSTART
     }
     //token data as string
     String Data;

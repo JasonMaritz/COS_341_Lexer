@@ -13,7 +13,8 @@ public class Parser {
     }
 
     public void parse() {
-        //SLR PARSE HERE
+        //recursive descent
+        
     }
 
     public SyntaxNode getOutput(){
