@@ -31,6 +31,7 @@ public class Parser {
             input = input.getNext();
         }else{
             System.err.print("Unexpected Token:" + input.toString());
+            System.err.print(" expected: "+ expected.getData());
             System.exit(-1);
         }
     }
@@ -61,7 +62,18 @@ public class Parser {
         }
     }
     private SyntaxNode parseCODE(){
-        return null;
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "CODE");
+        if(input.equals("halt")||input.equals("input")||input.equals("output")||input.equals(TokenNode.Type.VARNAME)||
+                input.equals("if")||input.equals("for")|| input.equals("while")){
+              res.addChild(parseINSTR());
+              if(input.equals(";")){
+                  match(new TokenNode(TokenNode.Type.SEMICOLON, ";"));
+                  res.addChild(parseCODE());
+              }
+            return res;
+        }else{
+            return null;
+        }
     }
     private SyntaxNode parsePROC_DEFS(){
         return null;
