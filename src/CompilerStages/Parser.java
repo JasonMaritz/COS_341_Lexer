@@ -5,8 +5,8 @@ import Nodes.TokenNode;
 
 public class Parser {
     TokenNode input;
-    TokenNode LLHead = null;
-    SyntaxNode SyntaxTreeRoot = null;
+    TokenNode LLHead;
+    SyntaxNode SyntaxTreeRoot;
 
     public Parser(TokenNode LexerInput) {
         LLHead = LexerInput;
