@@ -171,7 +171,32 @@ public class Parser {
         return res;
     }
     private SyntaxNode parseBRANCH(){
-        return null;
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "BRANCH");
+        if(input.equals("if")){
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, "if"));
+            match(input);
+            match(new TokenNode(TokenNode.Type.LPAREN, "("));
+            res.addChild(parseBOOL());
+            match(new TokenNode(TokenNode.Type.RPAREN, ")"));
+            if(input.equals("then")){
+                res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, "then"));
+                match(input);
+            }else{
+                System.err.print("Expected \"then\", received: " + input.getData());
+                System.exit(-1);
+            }
+            match(new TokenNode(TokenNode.Type.LBRACE, "{"));
+            res.addChild(parseCODE());
+            match(new TokenNode(TokenNode.Type.RBRACE, "}"));
+            if(input.equals("else")){
+                res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, "else"));
+                match(input);
+                match(new TokenNode(TokenNode.Type.LBRACE, "{"));
+                res.addChild(parseCODE());
+                match(new TokenNode(TokenNode.Type.RBRACE, "}"));
+            }
+        }
+        return res;
     }
     private SyntaxNode parseLOOP(){
         return null;
