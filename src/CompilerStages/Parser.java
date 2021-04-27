@@ -4,7 +4,7 @@ import Nodes.SyntaxNode;
 import Nodes.TokenNode;
 
 public class Parser {
-    String input;
+    TokenNode input;
     TokenNode LLHead = null;
     SyntaxNode SyntaxTreeRoot = null;
 
@@ -14,6 +14,7 @@ public class Parser {
 
     public void parse() {
         //recursive descent
+        input = LLHead;
         SyntaxTreeRoot = parsePROGPRIME();
     }
 
@@ -25,6 +26,15 @@ public class Parser {
         return "Back to doing fuck-all";
     }
 
+
+    private void match(TokenNode expected){
+        if(input.equals(expected)){
+            input = input.getNext();
+        }else{
+            System.err.print("Unexpected Token:" + input.toString());
+            System.exit(-1);
+        }
+    }
     private SyntaxNode parsePROGPRIME(){
         return null;
     }

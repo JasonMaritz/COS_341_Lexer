@@ -33,6 +33,10 @@ public class TokenNode {
         return ret;
     }
 
+    public boolean equals(TokenNode n){
+        return (n.tokenType.name().equals(this.tokenType.name()) && n.Data.equals(this.getData()));
+    }
+
     public Type getTokenType() {
         return tokenType;
     }
