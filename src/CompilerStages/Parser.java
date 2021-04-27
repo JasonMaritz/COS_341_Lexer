@@ -155,7 +155,20 @@ public class Parser {
         return null;
     }
     private SyntaxNode parseCALC(){
-        return null;
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "CALC");
+        if(input.equals("add")||input.equals("sub")|| input.equals("mult")){
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, input.getData()));
+            match(input);
+            match(new TokenNode(TokenNode.Type.LPAREN, "("));
+            res.addChild(parseNUMEXPR());
+            match(new TokenNode(TokenNode.Type.COMMA, ","));
+            res.addChild(parseNUMEXPR());
+            match(new TokenNode(TokenNode.Type.RPAREN, ")"));
+        }else{
+            System.err.print("Expected calculation add/sub/mult, received: "+input.getData());
+            System.exit(-1);
+        }
+        return res;
     }
     private SyntaxNode parseBRANCH(){
         return null;
