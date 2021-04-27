@@ -36,9 +36,10 @@ public class Parser {
     }
 
     private SyntaxNode parsePROGPRIME(){
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "PROGPRIME");
         if(input.equals("halt")||input.equals("input")||input.equals("output")||input.equals(TokenNode.Type.VARNAME)||
                 input.equals("if")||input.equals("for")|| input.equals("while")){
-            SyntaxNode res = parsePROG();
+            res.addChild(parsePROG());
             match(new TokenNode(TokenNode.Type.EOF, "$"));
             return res;
         }else{
@@ -46,7 +47,18 @@ public class Parser {
         }
     }
     private SyntaxNode parsePROG(){
-        return null;
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "PROG");
+        if(input.equals("halt")||input.equals("input")||input.equals("output")||input.equals(TokenNode.Type.VARNAME)||
+                input.equals("if")||input.equals("for")|| input.equals("while")){
+            res.addChild(parseCODE());
+            if(input.equals(";")){
+                match(input);
+                res.addChild(parsePROC_DEFS());
+            }
+            return res;
+        }else{
+            return null;
+        }
     }
     private SyntaxNode parseCODE(){
         return null;

@@ -3,7 +3,7 @@ package Nodes;
 import java.util.Vector;
 
 public class SyntaxNode {
-    enum type{TERMINAL, NONTERMINAL}
+    public enum type{TERMINAL, NONTERMINAL}
     type nodeType;
     String grammerSymbol;
     Vector<SyntaxNode> children;
