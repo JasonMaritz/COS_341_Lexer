@@ -257,6 +257,55 @@ public class Parser {
         return res;
     }
     private SyntaxNode parseBOOL(){
-        return null;
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "BOOL");
+        if(input.equals("eq")){
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, "eq"));
+            match(input);
+            match(new TokenNode(TokenNode.Type.LPAREN, "("));
+            if(input.equals(TokenNode.Type.VARNAME)){
+                res.addChild(parseVAR());
+                match(new TokenNode(TokenNode.Type.COMMA, ","));
+                res.addChild(parseVAR());
+                match(new TokenNode(TokenNode.Type.RPAREN, ")"));
+            }else if(input.equals(TokenNode.Type.INTEGER)||input.equals("add")||input.equals("sub")||input.equals("mult")){//NUMEXPR
+                res.addChild(parseNUMEXPR());
+                match(new TokenNode(TokenNode.Type.COMMA, ","));
+                res.addChild(parseNUMEXPR());
+                match(new TokenNode(TokenNode.Type.RPAREN, ")"));
+            }else{//BOOL
+                res.addChild(parseBOOL());
+                match(new TokenNode(TokenNode.Type.COMMA, ","));
+                res.addChild(parseBOOL());
+                match(new TokenNode(TokenNode.Type.RPAREN, ")"));
+            }
+        }else if(input.equals("(")){
+            match(input);
+            res.addChild(parseVAR());
+            if(input.equals("<")||input.equals(">")) {
+                res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, input.getData()));
+                match(input);
+            }else {
+                System.err.print("Expected < or >, received: " + input.getData());
+                System.exit(-1);
+            }
+            res.addChild(parseVAR());
+            match(new TokenNode(TokenNode.Type.RPAREN, ")"));
+        }else if(input.equals("not")) {
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, "not"));
+            match(input);
+            res.addChild(parseBOOL());
+        }else if(input.equals("or")|| input.equals("and")){
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, input.getData()));
+            match(input);
+            match(new TokenNode(TokenNode.Type.LPAREN, "("));
+            res.addChild(parseBOOL());
+            match(new TokenNode(TokenNode.Type.COMMA, ","));
+            res.addChild(parseBOOL());
+            match(new TokenNode(TokenNode.Type.RPAREN, ")"));
+        }else{
+            System.err.print("Expected boolean expression, received: " + input.getData());
+            System.exit(-1);
+        }
+        return res;
     }
 }
