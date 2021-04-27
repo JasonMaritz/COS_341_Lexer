@@ -23,7 +23,7 @@ public class Parser {
     }
 
     public String toString(){
-        return "Back to doing fuck-all";
+        return "Back to doing fuck-all, but now making a tree that it never shows";
     }
 
     private void match(TokenNode expected){
