@@ -76,7 +76,7 @@ public class Parser {
         }
     }
     private SyntaxNode parsePROC_DEFS(){
-        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "PROC");
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "PROC_DEFS");
         if(input.equals("proc")){
             res.addChild(parsePROC());
             if(!input.equals("$")){
@@ -88,7 +88,20 @@ public class Parser {
         }
     }
     private SyntaxNode parsePROC(){
-        return null;
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "PROC");
+        match(new TokenNode(TokenNode.Type.PROC, "proc"));
+        res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, "proc"));
+        if(input.equals(TokenNode.Type.VARNAME)){
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, input.getData()));
+        }else{
+            System.err.print("Error: expected procedure name, received: " + input.getData());
+            System.exit(-1);
+        }
+        match(input);
+        match(new TokenNode(TokenNode.Type.LBRACE, "{"));
+        res.addChild(parseCODE());
+        match(new TokenNode(TokenNode.Type.RBRACE, "}"));
+        return res;
     }
     private SyntaxNode parseINSTR(){
         return null;
