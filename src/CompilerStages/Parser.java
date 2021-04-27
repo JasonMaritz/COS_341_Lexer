@@ -210,8 +210,42 @@ public class Parser {
         }
         return res;
     }
-    private SyntaxNode parseLOOP(){
-        return null;
+    private SyntaxNode parseLOOP() {
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "LOOP");
+        if (input.equals("for")) {
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, "for"));
+            match(input);
+            match(new TokenNode(TokenNode.Type.LPAREN, "("));
+            res.addChild(parseVAR());
+            match(new TokenNode(TokenNode.Type.ASSIGN, "="));
+            match(new TokenNode(TokenNode.Type.INTEGER, "0"));
+            match(new TokenNode(TokenNode.Type.SEMICOLON, ";"));
+            res.addChild(parseVAR());
+            match(new TokenNode(TokenNode.Type.GREATCOMP, "<"));
+            res.addChild(parseVAR());
+            match(new TokenNode(TokenNode.Type.SEMICOLON, ";"));
+            res.addChild(parseVAR());
+            match(new TokenNode(TokenNode.Type.ASSIGN, "="));
+            match(new TokenNode(TokenNode.Type.ADD, "add"));
+            match(new TokenNode(TokenNode.Type.LPAREN, "("));
+            res.addChild(parseVAR());
+            match(new TokenNode(TokenNode.Type.COMMA, ","));
+            match(new TokenNode(TokenNode.Type.INTEGER, "1"));
+            match(new TokenNode(TokenNode.Type.RPAREN, ")"));
+            match(new TokenNode(TokenNode.Type.RPAREN, ")"));
+            match(new TokenNode(TokenNode.Type.LBRACE, "{"));
+            res.addChild(parseCODE());
+            match(new TokenNode(TokenNode.Type.RBRACE, "}"));
+        } else if(input.equals("while")){
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, "while"));
+            match(new TokenNode(TokenNode.Type.LPAREN, "("));
+            res.addChild(parseBOOL());
+            match(new TokenNode(TokenNode.Type.RPAREN, ")"));
+            match(new TokenNode(TokenNode.Type.LBRACE, "{"));
+            res.addChild(parseCODE());
+            match(new TokenNode(TokenNode.Type.RBRACE, "}"));
+        }
+        return res;
     }
     private SyntaxNode parseBOOL(){
         return null;
