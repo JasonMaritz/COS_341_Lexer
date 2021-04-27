@@ -122,11 +122,20 @@ public class Parser {
             match(new TokenNode(TokenNode.Type.RPAREN, ")"));
         }else{
             System.err.print("expected IO call \"input\" or \"output\", received: " + input.getData());
+            System.exit(-1);
         }
         return res;
     }
     private SyntaxNode parseCALL(){
-        return null;
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "CALL");
+        if(input.equals(TokenNode.Type.VARNAME)){
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, input.getData()));
+            match(input);
+        }else{
+            System.err.print("Expected procedure name, received: " + input.getData());
+            System.exit(-1);
+        }
+        return res;
     }
     private SyntaxNode parseVAR(){
         return null;
