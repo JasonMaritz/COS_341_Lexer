@@ -107,7 +107,23 @@ public class Parser {
         return null;
     }
     private SyntaxNode parseIO(){
-        return null;
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "IO");
+        if(input.equals("input")){
+            match(new TokenNode(TokenNode.Type.INPUT, "input"));
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, "input"));
+            match(new TokenNode(TokenNode.Type.LPAREN, "("));
+            res.addChild(parseVAR());
+            match(new TokenNode(TokenNode.Type.RPAREN, ")"));
+        }else if(input.equals("output")){
+            match(new TokenNode(TokenNode.Type.OUTPUT, "output"));
+            res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, "output"));
+            match(new TokenNode(TokenNode.Type.LPAREN, "("));
+            res.addChild(parseVAR());
+            match(new TokenNode(TokenNode.Type.RPAREN, ")"));
+        }else{
+            System.err.print("expected IO call \"input\" or \"output\", received: " + input.getData());
+        }
+        return res;
     }
     private SyntaxNode parseCALL(){
         return null;
