@@ -149,7 +149,19 @@ public class Parser {
         return res;
     }
     private SyntaxNode parseASSIGN(){
-        return null;
+        SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "ASSIGN");
+        if(input.equals(TokenNode.Type.VARNAME)){
+            res.addChild(parseVAR());
+            match(new TokenNode(TokenNode.Type.ASSIGN, "="));
+            if(input.equals(TokenNode.Type.STRING)){
+                res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, input.getData()));
+            }else if(input.equals(TokenNode.Type.VARNAME)){
+                res.addChild(parseVAR());
+            }else{
+                res.addChild(parseNUMEXPR());
+            }
+        }
+        return res;
     }
     private SyntaxNode parseNUMEXPR(){
         return null;
