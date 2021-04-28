@@ -1,5 +1,7 @@
-variable = 5;
-s = variable;
-for(i = 0; i < 10; i = add(1, 1)){
-    output(10);
-}
+a = b ;
+b = "big" ;
+u = v ;
+a = add(sub(17,myvariable),12) ;
+z = 726 ;
+y = x ;
+x eq(syntaxerror,here)

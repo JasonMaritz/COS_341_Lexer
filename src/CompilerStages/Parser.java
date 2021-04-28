@@ -14,8 +14,13 @@ public class Parser {
 
     public void parse() {
         //recursive descent
-        input = LLHead;
-        SyntaxTreeRoot = parsePROGPRIME();
+        input = LLHead.getNext();
+        if(LLHead.equals(TokenNode.Type.LEXERERROR)){
+            System.err.print("Lexical Error: " + LLHead.getData());
+            System.exit(-1);
+        }else {
+            SyntaxTreeRoot = parsePROGPRIME();
+        }
     }
 
     public SyntaxNode getOutput(){
@@ -52,8 +57,7 @@ public class Parser {
         if(input.equals("halt")||input.equals("input")||input.equals("output")||input.equals(TokenNode.Type.VARNAME)||
                 input.equals("if")||input.equals("for")|| input.equals("while")){
             res.addChild(parseCODE());
-            if(input.equals(";")){
-                match(input);
+            if(input.equals("proc")){
                 res.addChild(parsePROC_DEFS());
             }
             return res;
@@ -99,7 +103,7 @@ public class Parser {
         }
         match(input);
         match(new TokenNode(TokenNode.Type.LBRACE, "{"));
-        res.addChild(parseCODE());
+        res.addChild(parsePROG());
         match(new TokenNode(TokenNode.Type.RBRACE, "}"));
         return res;
     }
@@ -170,6 +174,7 @@ public class Parser {
             match(new TokenNode(TokenNode.Type.ASSIGN, "="));
             if(input.equals(TokenNode.Type.STRING)){
                 res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, input.getData()));
+                match(input);
             }else if(input.equals(TokenNode.Type.VARNAME)){
                 res.addChild(parseVAR());
             }else{
@@ -245,7 +250,7 @@ public class Parser {
             match(new TokenNode(TokenNode.Type.INTEGER, "0"));
             match(new TokenNode(TokenNode.Type.SEMICOLON, ";"));
             res.addChild(parseVAR());
-            match(new TokenNode(TokenNode.Type.GREATCOMP, "<"));
+            match(new TokenNode(TokenNode.Type.LESSCOMP, "<"));
             res.addChild(parseVAR());
             match(new TokenNode(TokenNode.Type.SEMICOLON, ";"));
             res.addChild(parseVAR());
@@ -262,6 +267,7 @@ public class Parser {
             match(new TokenNode(TokenNode.Type.RBRACE, "}"));
         } else if(input.equals("while")){
             res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, "while"));
+            match(input);
             match(new TokenNode(TokenNode.Type.LPAREN, "("));
             res.addChild(parseBOOL());
             match(new TokenNode(TokenNode.Type.RPAREN, ")"));
