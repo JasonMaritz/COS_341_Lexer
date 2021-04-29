@@ -1,5 +1,6 @@
 import CompilerStages.Lexer;
 import CompilerStages.Parser;
+import CompilerStages.TreeCrawler;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -7,7 +8,6 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        StringBuilder LexerOutput = new StringBuilder();
         String parserOutput;
         String output;
 
@@ -32,9 +32,12 @@ public class Main {
             Parser parser = new Parser(lexer.getOutput());
             parser.parse();
             parserOutput = parser.toString();
-            output = parserOutput;
+            //-------------------ScopeCrawling--------------------------------------------------------------------------
+            TreeCrawler scoper = new TreeCrawler(parser.getOutput());
+            scoper.scopeCrawl();
+            output = parser.getOutput().toString(0);
             //----------------------------------------------------------------------------------------------------------
-            writer.append(output.toString());
+            writer.append(output);
             writer.close();
         }catch (Exception e){
                 e.printStackTrace();
