@@ -1,7 +1,4 @@
-a = b ;
-b = "big" ;
-u = v ;
-a = add(sub(17,myvariable),12) ;
-z = 726 ;
-y = x ;
-x = "x"
+halt ; 
+proc myprocedure { callprocedure ; proc myprocedure { halt } proc myprocedure { input(variablename) } proc myprocedure { input(variablename) } } 
+proc myprocedure { input(variablename) ; proc myprocedure { callprocedure } proc myprocedure { halt } proc myprocedure { input(variablename) } } 
+proc myprocedure { input(variablename) ; proc myprocedure { input(variablename) } proc myprocedure { callprocedure } proc myprocedure { halt } }

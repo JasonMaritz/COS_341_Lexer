@@ -1,60 +1,114 @@
-NONTERMINAL: PROGPRIME
-	NONTERMINAL: PROG
-		NONTERMINAL: CODE
-			NONTERMINAL: INSTR
-				NONTERMINAL: ASSIGN
-					NONTERMINAL: VAR
-						TERMINAL: a
-					NONTERMINAL: VAR
-						TERMINAL: b
-			NONTERMINAL: CODE
-				NONTERMINAL: INSTR
-					NONTERMINAL: ASSIGN
-						NONTERMINAL: VAR
-							TERMINAL: b
-						TERMINAL: "big"
-				NONTERMINAL: CODE
-					NONTERMINAL: INSTR
-						NONTERMINAL: ASSIGN
-							NONTERMINAL: VAR
-								TERMINAL: u
-							NONTERMINAL: VAR
-								TERMINAL: v
-					NONTERMINAL: CODE
-						NONTERMINAL: INSTR
-							NONTERMINAL: ASSIGN
-								NONTERMINAL: VAR
-									TERMINAL: a
-								NONTERMINAL: NUMEXPR
-									NONTERMINAL: CALC
-										TERMINAL: add
-										NONTERMINAL: NUMEXPR
-											NONTERMINAL: CALC
-												TERMINAL: sub
-												NONTERMINAL: NUMEXPR
-													TERMINAL: 17
-												NONTERMINAL: NUMEXPR
-													NONTERMINAL: VAR
-														TERMINAL: myvariable
-										NONTERMINAL: NUMEXPR
-											TERMINAL: 12
-						NONTERMINAL: CODE
-							NONTERMINAL: INSTR
-								NONTERMINAL: ASSIGN
-									NONTERMINAL: VAR
-										TERMINAL: z
-									NONTERMINAL: NUMEXPR
-										TERMINAL: 726
-							NONTERMINAL: CODE
-								NONTERMINAL: INSTR
-									NONTERMINAL: ASSIGN
-										NONTERMINAL: VAR
-											TERMINAL: y
-										NONTERMINAL: VAR
-											TERMINAL: x
-								NONTERMINAL: CODE
-									NONTERMINAL: INSTR
-										NONTERMINAL: ASSIGN
-											NONTERMINAL: VAR
-												TERMINAL: x
-											TERMINAL: "x"
+NONTERMINAL: PROGPRIME, Scope: 0
+	NONTERMINAL: PROG, Scope: 0
+		NONTERMINAL: CODE, Scope: 0
+			NONTERMINAL: INSTR, Scope: 0
+				TERMINAL: halt, Scope: 0
+		NONTERMINAL: PROC_DEFS, Scope: 0
+			NONTERMINAL: PROC, Scope: 0.1
+				TERMINAL: proc, Scope: 0.1
+				TERMINAL: myprocedure, Scope: 0.1
+				NONTERMINAL: PROG, Scope: 0.1
+					NONTERMINAL: CODE, Scope: 0.1
+						NONTERMINAL: INSTR, Scope: 0.1
+							NONTERMINAL: CALL, Scope: 0.1
+								TERMINAL: callprocedure, Scope: 0.1
+					NONTERMINAL: PROC_DEFS, Scope: 0.1
+						NONTERMINAL: PROC, Scope: 0.1.1
+							TERMINAL: proc, Scope: 0.1.1
+							TERMINAL: myprocedure, Scope: 0.1.1
+							NONTERMINAL: PROG, Scope: 0.1.1
+								NONTERMINAL: CODE, Scope: 0.1.1
+									NONTERMINAL: INSTR, Scope: 0.1.1
+										TERMINAL: halt, Scope: 0.1.1
+						NONTERMINAL: PROC, Scope: 0.1.2
+							TERMINAL: proc, Scope: 0.1.2
+							TERMINAL: myprocedure, Scope: 0.1.2
+							NONTERMINAL: PROG, Scope: 0.1.2
+								NONTERMINAL: CODE, Scope: 0.1.2
+									NONTERMINAL: INSTR, Scope: 0.1.2
+										NONTERMINAL: IO, Scope: 0.1.2
+											TERMINAL: input, Scope: 0.1.2
+											NONTERMINAL: VAR, Scope: 0.1.2
+												TERMINAL: variablename, Scope: 0.1.2
+						NONTERMINAL: PROC, Scope: 0.1.3
+							TERMINAL: proc, Scope: 0.1.3
+							TERMINAL: myprocedure, Scope: 0.1.3
+							NONTERMINAL: PROG, Scope: 0.1.3
+								NONTERMINAL: CODE, Scope: 0.1.3
+									NONTERMINAL: INSTR, Scope: 0.1.3
+										NONTERMINAL: IO, Scope: 0.1.3
+											TERMINAL: input, Scope: 0.1.3
+											NONTERMINAL: VAR, Scope: 0.1.3
+												TERMINAL: variablename, Scope: 0.1.3
+			NONTERMINAL: PROC, Scope: 0.2
+				TERMINAL: proc, Scope: 0.2
+				TERMINAL: myprocedure, Scope: 0.2
+				NONTERMINAL: PROG, Scope: 0.2
+					NONTERMINAL: CODE, Scope: 0.2
+						NONTERMINAL: INSTR, Scope: 0.2
+							NONTERMINAL: IO, Scope: 0.2
+								TERMINAL: input, Scope: 0.2
+								NONTERMINAL: VAR, Scope: 0.2
+									TERMINAL: variablename, Scope: 0.2
+					NONTERMINAL: PROC_DEFS, Scope: 0.2
+						NONTERMINAL: PROC, Scope: 0.2.1
+							TERMINAL: proc, Scope: 0.2.1
+							TERMINAL: myprocedure, Scope: 0.2.1
+							NONTERMINAL: PROG, Scope: 0.2.1
+								NONTERMINAL: CODE, Scope: 0.2.1
+									NONTERMINAL: INSTR, Scope: 0.2.1
+										NONTERMINAL: CALL, Scope: 0.2.1
+											TERMINAL: callprocedure, Scope: 0.2.1
+						NONTERMINAL: PROC, Scope: 0.2.2
+							TERMINAL: proc, Scope: 0.2.2
+							TERMINAL: myprocedure, Scope: 0.2.2
+							NONTERMINAL: PROG, Scope: 0.2.2
+								NONTERMINAL: CODE, Scope: 0.2.2
+									NONTERMINAL: INSTR, Scope: 0.2.2
+										TERMINAL: halt, Scope: 0.2.2
+						NONTERMINAL: PROC, Scope: 0.2.3
+							TERMINAL: proc, Scope: 0.2.3
+							TERMINAL: myprocedure, Scope: 0.2.3
+							NONTERMINAL: PROG, Scope: 0.2.3
+								NONTERMINAL: CODE, Scope: 0.2.3
+									NONTERMINAL: INSTR, Scope: 0.2.3
+										NONTERMINAL: IO, Scope: 0.2.3
+											TERMINAL: input, Scope: 0.2.3
+											NONTERMINAL: VAR, Scope: 0.2.3
+												TERMINAL: variablename, Scope: 0.2.3
+			NONTERMINAL: PROC, Scope: 0.3
+				TERMINAL: proc, Scope: 0.3
+				TERMINAL: myprocedure, Scope: 0.3
+				NONTERMINAL: PROG, Scope: 0.3
+					NONTERMINAL: CODE, Scope: 0.3
+						NONTERMINAL: INSTR, Scope: 0.3
+							NONTERMINAL: IO, Scope: 0.3
+								TERMINAL: input, Scope: 0.3
+								NONTERMINAL: VAR, Scope: 0.3
+									TERMINAL: variablename, Scope: 0.3
+					NONTERMINAL: PROC_DEFS, Scope: 0.3
+						NONTERMINAL: PROC, Scope: 0.3.1
+							TERMINAL: proc, Scope: 0.3.1
+							TERMINAL: myprocedure, Scope: 0.3.1
+							NONTERMINAL: PROG, Scope: 0.3.1
+								NONTERMINAL: CODE, Scope: 0.3.1
+									NONTERMINAL: INSTR, Scope: 0.3.1
+										NONTERMINAL: IO, Scope: 0.3.1
+											TERMINAL: input, Scope: 0.3.1
+											NONTERMINAL: VAR, Scope: 0.3.1
+												TERMINAL: variablename, Scope: 0.3.1
+						NONTERMINAL: PROC, Scope: 0.3.2
+							TERMINAL: proc, Scope: 0.3.2
+							TERMINAL: myprocedure, Scope: 0.3.2
+							NONTERMINAL: PROG, Scope: 0.3.2
+								NONTERMINAL: CODE, Scope: 0.3.2
+									NONTERMINAL: INSTR, Scope: 0.3.2
+										NONTERMINAL: CALL, Scope: 0.3.2
+											TERMINAL: callprocedure, Scope: 0.3.2
+						NONTERMINAL: PROC, Scope: 0.3.3
+							TERMINAL: proc, Scope: 0.3.3
+							TERMINAL: myprocedure, Scope: 0.3.3
+							NONTERMINAL: PROG, Scope: 0.3.3
+								NONTERMINAL: CODE, Scope: 0.3.3
+									NONTERMINAL: INSTR, Scope: 0.3.3
+										TERMINAL: halt, Scope: 0.3.3
