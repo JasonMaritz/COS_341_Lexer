@@ -4,8 +4,19 @@ import java.util.HashMap;
 import java.util.Vector;
 
 public class SyntaxNode {
+    public Vector<SyntaxNode> getChildren() {
+        return  children;
+    }
+
+    public String getData(String key) {
+        return data.get(key);
+    }
+
     public enum type{TERMINAL, NONTERMINAL}
     type nodeType;
+    public type getNodeType(){
+        return nodeType;
+    }
     HashMap<String, String> data;
     Vector<SyntaxNode> children;
     public SyntaxNode(type ntype, String symbol){
