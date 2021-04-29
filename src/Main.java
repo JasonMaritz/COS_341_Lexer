@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        String parserOutput;
         String output;
 
         //-------------------LEXER CALL-------------------------------------------------------
@@ -31,7 +30,6 @@ public class Main {
             //-------------------CompilerStages.Parser CALL-------------------------------------------------------------
             Parser parser = new Parser(lexer.getOutput());
             parser.parse();
-            parserOutput = parser.toString();
             //-------------------ScopeCrawling--------------------------------------------------------------------------
             TreeCrawler scoper = new TreeCrawler(parser.getOutput());
             scoper.scopeCrawl();
