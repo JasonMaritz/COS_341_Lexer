@@ -23,7 +23,8 @@ public class SyntaxNode {
         StringBuilder res = new StringBuilder();
         res.append("\t".repeat(Math.max(0, i)));
         int k = ++i;
-        res.append(nodeType.name()).append(": ").append(data.get("symbol")).append("\n");
+        res.append(nodeType.name()).append(": ").append(data.get("symbol")).append(" Scope: ").append(data.get("scope")).
+                append("\n");
         for(SyntaxNode n: children){
             if(n!=null) {
                 res.append(n.toString(k));
