@@ -4,4 +4,4 @@ u = v ;
 a = add(sub(17,myvariable),12) ;
 z = 726 ;
 y = x ;
-x eq(syntaxerror,here)
+x = "x"

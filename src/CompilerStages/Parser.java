@@ -28,7 +28,7 @@ public class Parser {
     }
 
     public String toString(){
-        return "Back to doing fuck-all, but now making a tree that it never shows";
+        return SyntaxTreeRoot.toString(0);
     }
 
     private void match(TokenNode expected){
@@ -83,7 +83,7 @@ public class Parser {
         SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "PROC_DEFS");
         if(input.equals("proc")){
             res.addChild(parsePROC());
-            if(!input.equals("$")){
+            while(input.equals("proc")){
                 res.addChild(parsePROC());
             }
             return res;
@@ -104,6 +104,8 @@ public class Parser {
         match(input);
         match(new TokenNode(TokenNode.Type.LBRACE, "{"));
         res.addChild(parsePROG());
+        if(input.equals("proc"))
+            res.addChild(parsePROC_DEFS());
         match(new TokenNode(TokenNode.Type.RBRACE, "}"));
         return res;
     }
