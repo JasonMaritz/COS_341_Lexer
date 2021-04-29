@@ -20,17 +20,15 @@ public class SyntaxNode {
     }
 
     public String toString(int i){
-        String res = "";
-        for(int j = 0; j < i; j++){
-            res += "\t";
-        }
+        StringBuilder res = new StringBuilder();
+        res.append("\t".repeat(Math.max(0, i)));
         int k = ++i;
-        res += nodeType.name() + ": " + data.get("symbol") + "\n";
+        res.append(nodeType.name()).append(": ").append(data.get("symbol")).append("\n");
         for(SyntaxNode n: children){
             if(n!=null) {
-                res += n.toString(k);
+                res.append(n.toString(k));
             }
         }
-        return res;
+        return res.toString();
     }
 }
