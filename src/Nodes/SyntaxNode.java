@@ -31,4 +31,8 @@ public class SyntaxNode {
         }
         return res.toString();
     }
+
+    public void addScope(String s){
+        data.put("scope", s);
+    }
 }
