@@ -7,6 +7,7 @@ import java.util.Vector;
 public class TreeCrawler {
     SyntaxNode treeRoot;
     Vector<String> usedScopes;
+    int nextScope=1;
 
     public TreeCrawler(SyntaxNode root){
         usedScopes = new Vector<>();
@@ -23,13 +24,13 @@ public class TreeCrawler {
         }
         if(curr.getNodeType() == SyntaxNode.type.NONTERMINAL){
             //add scope but dont return to allow children to be scoped as well
-            if(curr.getData("symbol").equals("LOOP")||curr.getData("symbol").equals("PROC")){
-                    int i = 1;
-                    while(usedScopes.contains(parentScope+"."+i)){
-                        i++;
-                    }
-                    curr.addScope(parentScope+"."+i);
-                    usedScopes.add(parentScope+"."+i);
+            if((curr.getData("symbol").equals("LOOP")&&curr.getChildren().get(0).getData("symbol").equals("for"))||curr.getData("symbol").equals("PROC")){
+                    //int i = 1;
+//                    while(usedScopes.contains(parentScope+"."+i)) {
+//                        i++;
+//                    }
+                    curr.addScope(parentScope+"."+nextScope++);
+                    //usedScopes.add(parentScope+"."+i);
             }else{
                 curr.addScope(parentScope);
             }

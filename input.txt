@@ -1,4 +1,144 @@
-halt ; 
-proc myprocedure { callprocedure ; proc myprocedure { halt } proc myprocedure { input(variablename) } proc myprocedure { input(variablename) } } 
-proc myprocedure { input(variablename) ; proc myprocedure { callprocedure } proc myprocedure { halt } proc myprocedure { input(variablename) } } 
+input(x);
+n=x;
+r="unknown";
+s="even";
+m=mult(m,-1);
+checknumber;
+if( eq(r,s) )
+then { output(s) }
+else { output(r) };
+halt;
+proc checknumber
+{
+for(bimbl=0; bambl<bumbl; girk=add(gark,1)) {
+if(eq(eq((cos341<cos341),
+eq(not (cos341<cos341),
+(cos341<cos341))),
+not and((cos341<cos341),
+(cos341<cos341)))) then
+{ if(eq(eq((cos341<cos341),
+eq(not (cos341<cos341),
+(cos341<cos341))),
+not and((cos341<cos341),
+(cos341<cos341)))) then
+{ halt } else {
+if(eq(eq((cos341<cos341),
+eq(not (cos341<cos341),
+(cos341<cos341))),
+not and((cos341<cos341),
+(cos341<cos341)))) then
+{ if(eq(eq((cos341<cos341),
+eq(not (cos341<cos341),
+(cos341<cos341))),not
+and((cos341<cos341),
+(cos341<cos341))))
+then { halt } else
+{ halt } } } } ;
+if(eq(eq((cos341<cos341),
+eq(not (cos341<cos341),
+(cos341<cos341))),not
+and((cos341<cos341),
+(cos341<cos341)))) then
+{ if(eq(eq((cos341<cos341),
+eq(not (cos341<cos341),
+(cos341<cos341))),
+not and((cos341<cos341),
+(cos341<cos341)))) then
+{ halt } else {
+if(eq(eq((cos341<cos341),
+eq(not (cos341<cos341),
+(cos341<cos341))),not
+and((cos341<cos341),
+(cos341<cos341))))
+then {
+if(eq(eq((cos341<cos341),
+eq(not (cos341<cos341),
+(cos341<cos341))),
+not and((cos341<cos341),
+(cos341<cos341)))) then
+{ for(bimbl=0; bambl<bumbl; girk=add(gark,1)) { for(gurk=0; doesnt<make; any=add(sense,1)) { for(kling=0; klang<klong; that=add(is,1)) { input(really) } } } ; for(silly=0; but<in; parsing=add(we,1)) { for(dont=0; care<whether; it=add(makes,1)) { for(any=0; sense<because; the=add(parser,1)) { output(only) } } } ; for(checks=0; the<syntax; without=add(caring,1)) { for(about=0; the<semantics; you=add(are,1)) { for(a=0; third<year; student=add(fantastic,1)) { halt } } } } else
+{ halt } } } };
+
+for(gurk=0; doesnt<make; any=add(sense,1)) { for(kling=0; klang<klong; that=add(is,1)) { input(really) } } } ; for(silly=0; but<in; parsing=add(we,1)) { for(dont=0; care<whether; it=add(makes,1)) { for(any=0; sense<because; the=add(parser,1)) { output(only) } } } ; for(checks=0; the<syntax; without=add(caring,1)) { for(about=0; the<semantics; you=add(are,1)) { for(a=0; third<year; student=add(fantastic,1)) { halt } } };
+m=n;
+if((m<x))
+then{m=mult(m,-1)};
+
+while((m>p))
+{m=sub(m,2)};
+
+for(x=0; y<t; p=add(t,1))
+{
+while(eq(mult(mynumber,97),mult(mynumber,98))) { while(eq(mult(mynumber,97),mult(mynumber,98))) { while(eq(mult(mynumber,97),mult(mynumber,98))) { while(eq(mult(mynumber,97),mult(mynumber,98))) { while(eq(mult(mynumber,97),mult(mynumber,98))) { procedurecall ; procedurecall } } } } };
+
+x=z;
+
+if(not(x<p))
+then{x=y};
+p=d;
+while((x<p))
+{
+
+while(eq(mult(mynumber,97),mult(mynumber,98))) { while(eq(mult(mynumber,97),mult(mynumber,98))) { while(eq(mult(mynumber,97),mult(mynumber,98))) { while(eq(mult(mynumber,97),mult(mynumber,98))) { while(eq(mult(mynumber,97),mult(mynumber,98))) { procedurecall ; procedurecall } } } } };
+
+x=y
+};
+if(eq(z,p))
+then{happiness=love};
+happiness=add(x,y);
+love=sub(x,y);
+life=mult(happiness,love);
+happiness=add(add(x,y),y);
+love=sub(mult(x,y),y);
+happiness=mult(sub(x,y),y);
+happiness=add(add(x,y),sub(x,y));
+love=sub(mult(x,y),sub(x,y));
+happiness=mult(sub(x,y),sub(x,y));
+input(happiness);
+output(love);
+iwanthappiness;
+p=d
+}
+}
+
+proc happyfunction
+{
+nolove
+}
+
+proc lovefunction
+{
+nohappiness;
+input(x)
+}
+
+proc iamsad
+{
+sadness;
+output(sadness)
+}
+
+proc fuckai
+{
+ihateai;
+makeaibetter;
+output(moderateai);
+
+if(and((happiness>love),(love<happiness)))
+then { output(s) }
+else { output(r) };
+
+if(or((happiness>love),(love<happiness)))
+then { output(s) }
+else { output(r) };
+
+if(not(x>y))
+then { output(s) }
+else { output(r) };
+
+halt;
+proc myprocedure { for(bimbl=0; bambl<bumbl; girk=add(gark,1)) { for(gurk=0; doesnt<make; any=add(sense,1)) { for(kling=0; klang<klong; that=add(is,1)) { input(really) } } } ; for(silly=0; but<in; parsing=add(we,1)) { for(dont=0; care<whether; it=add(makes,1)) { for(any=0; sense<because; the=add(parser,1)) { output(only) } } } ; for(checks=0; the<syntax; without=add(caring,1)) { for(about=0; the<semantics; you=add(are,1)) { for(a=0; third<year; student=add(fantastic,1)) { halt } } }; proc myprocedure { halt } proc myprocedure { input(variablename) } proc myprocedure { input(variablename) } }
+proc myprocedure { for(bimbl=0; bambl<bumbl; girk=add(gark,1)) { for(gurk=0; doesnt<make; any=add(sense,1)) { for(kling=0; klang<klong; that=add(is,1)) { input(really) } } } ; for(silly=0; but<in; parsing=add(we,1)) { for(dont=0; care<whether; it=add(makes,1)) { for(any=0; sense<because; the=add(parser,1)) { output(only) } } } ; for(checks=0; the<syntax; without=add(caring,1)) { for(about=0; the<semantics; you=add(are,1)) { for(a=0; third<year; student=add(fantastic,1)) { halt } } }; proc myprocedure { callprocedure } proc myprocedure { halt } proc myprocedure { input(variablename) } }
 proc myprocedure { input(variablename) ; proc myprocedure { input(variablename) } proc myprocedure { callprocedure } proc myprocedure { halt } }
+}
+
