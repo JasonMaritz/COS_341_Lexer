@@ -33,6 +33,7 @@ public class Main {
             //-------------------ScopeCrawling--------------------------------------------------------------------------
             TreeCrawler scoper = new TreeCrawler(parser.getOutput());
             scoper.scopeCrawl();
+            scoper.procRules();
             output = parser.getOutput().toString(0);
             //----------------------------------------------------------------------------------------------------------
             writer.append(output);

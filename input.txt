@@ -1,4 +1,6 @@
-halt ; 
-proc myprocedure { callprocedure ; proc myprocedure { halt } proc myprocedure { input(variablename) } proc myprocedure { input(variablename) } } 
-proc myprocedure { input(variablename) ; proc myprocedure { callprocedure } proc myprocedure { halt } proc myprocedure { input(variablename) } } 
-proc myprocedure { input(variablename) ; proc myprocedure { input(variablename) } proc myprocedure { callprocedure } proc myprocedure { halt } }
+for(varname=0;varname<varname1;varname1=add(varname1,1)){for(varname=0;varname<varname1;varname1=add(varname1,1)){halt}};
+for(varname=0;varname<varname1;varname1=add(varname1,1)){for(varname=0;varname<varname1;varname1=add(varname1,1)){halt};for(varname=0;varname<varname1;varname1=add(varname1,1)){halt}};
+for(varname=0;varname<varname1;varname1=add(varname1,1)){for(varname=0;varname<varname1;varname1=add(varname1,1)){halt};for(varname=0;varname<varname1;varname1=add(varname1,1)){halt}};
+for(varname=0;varname<varname1;varname1=add(varname1,1)){for(varname=0;varname<varname1;varname1=add(varname1,1)){halt};for(varname=0;varname<varname1;varname1=add(varname1,1)){halt};for(varname=0;varname<varname1;varname1=add(varname1,1)){for(varname=0;varname<varname1;varname1=add(varname1,1)){halt};for(varname=0;varname<varname1;varname1=add(varname1,1)){halt}}}
+proc myproc { proc myprocs { halt }  }
+proc myprocs { halt; }

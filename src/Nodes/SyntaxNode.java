@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Vector;
 
 public class SyntaxNode {
+    public boolean error;
+    public String errMessage;
+
     public Vector<SyntaxNode> getChildren() {
         return  children;
     }
@@ -31,6 +34,9 @@ public class SyntaxNode {
     }
 
     public String toString(int i){
+        if(error){
+            return errMessage;
+        }
         StringBuilder res = new StringBuilder();
         res.append("\t".repeat(Math.max(0, i)));
         int k = ++i;
