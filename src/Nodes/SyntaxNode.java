@@ -40,8 +40,12 @@ public class SyntaxNode {
         StringBuilder res = new StringBuilder();
         res.append("\t".repeat(Math.max(0, i)));
         int k = ++i;
-        res.append(nodeType.name()).append(": ").append(data.get("symbol")).append(", Scope: ").append(data.get("scope")).
-                append("\n");
+        res.append(nodeType.name()).append(": ").append(data.get("symbol")).append(", Scope: ").append(data.get("scope"));
+        if(nodeType.name().equals(type.TERMINAL.name())){
+            if(data.get("internalName")!=null)
+                res.append(", internalName: ").append(data.get("internalName"));
+        }
+        res.append("\n");
         for(SyntaxNode n: children){
             if(n!=null) {
                 res.append(n.toString(k));
@@ -53,4 +57,5 @@ public class SyntaxNode {
     public void addScope(String s){
         data.put("scope", s);
     }
+    public void addInternalName(String s){ data.put("internalName", s); }
 }

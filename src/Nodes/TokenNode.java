@@ -38,7 +38,7 @@ public class TokenNode {
     }
 
     public boolean equals(String dat){
-        return this.getData() == dat;
+        return this.getData().equals(dat);
     }
 
     public boolean equals(Type t){

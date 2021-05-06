@@ -255,8 +255,6 @@ public class Lexer {
                 }
                 if(!returnBool) {
                     ret.add(Token + Data + "]-> ");
-                    Token = "";
-                    Data = "";
                 }else{
                     ret.clear();
                     ret.add("Lexical_Error_invalid_symbol_in_token:-");

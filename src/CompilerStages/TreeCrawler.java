@@ -8,6 +8,7 @@ public class TreeCrawler {
     SyntaxNode treeRoot;
     Vector<String> usedScopes;
     int nextScope=1;
+    int nextName = 1;
 
     public TreeCrawler(SyntaxNode root){
         usedScopes = new Vector<>();
@@ -24,10 +25,6 @@ public class TreeCrawler {
         if(curr.getNodeType() == SyntaxNode.type.NONTERMINAL){
             //add scope but dont return to allow children to be scoped as well
             if((curr.getData("symbol").equals("LOOP")&&curr.getChildren().get(0).getData("symbol").equals("for"))||curr.getData("symbol").equals("PROC")){
-                    //int i = 1;
-//                    while(usedScopes.contains(parentScope+"."+i)) {
-//                        i++;
-//                    }
                     curr.addScope(parentScope+"."+nextScope++);
                     //usedScopes.add(parentScope+"."+i);
             }else{
@@ -137,9 +134,42 @@ public class TreeCrawler {
         }
     }
     public void varCrawl(){
-        varCrawl(treeRoot);
+        Vector<SyntaxNode> vars = new Vector<>();
+        varCrawl(treeRoot, vars);
     }
-    private void varCrawl(SyntaxNode curr){
+    private void varCrawl(SyntaxNode curr, Vector<SyntaxNode> vars){
+        if(curr == null || curr.getNodeType().name().equals("TERMINAL"))
+            return;
 
+        if(curr.getData("symbol").equals("LOOP")&&curr.getChildren().elementAt(0).getData("symbol").equals("for")){
+            SyntaxNode child = curr.getChildren().get(1).getChildren().get(0);
+            //child is the var
+            child.addInternalName(child.getData("symbol").concat(String.valueOf(nextName++)));
+            vars.add(child);
+        }
+
+        if(curr.getData("symbol").equals("VAR")){
+            SyntaxNode child = curr.getChildren().get(0);
+            if(child.getData("internalName")==null){
+                //child is the var and is not counting var of a for loop
+                for(SyntaxNode node: vars){
+                    if(node.getData("symbol").equals(child.getData("symbol"))){
+                        //node matches curr symbol
+                        //check scopes to determine new name
+                        if(child.getData("scope").contains(node.getData("scope"))){
+                            child.addInternalName(node.getData("internalName"));
+                        }
+                    }
+                }
+                if(child.getData("internalName")==null){
+                    child.addInternalName(child.getData("symbol").concat(String.valueOf(nextName++)));
+                }
+                vars.add(child);
+            }
+        }
+
+        for(SyntaxNode node: curr.getChildren()){
+            varCrawl(node, vars);
+        }
     }
 }
