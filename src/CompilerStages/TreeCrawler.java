@@ -136,4 +136,10 @@ public class TreeCrawler {
             procCrawl(n, procs);
         }
     }
+    public void varCrawl(){
+        varCrawl(treeRoot);
+    }
+    private void varCrawl(SyntaxNode curr){
+
+    }
 }

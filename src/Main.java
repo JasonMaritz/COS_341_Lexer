@@ -33,7 +33,9 @@ public class Main {
             //-------------------ScopeCrawling--------------------------------------------------------------------------
             TreeCrawler scoper = new TreeCrawler(parser.getOutput());
             scoper.scopeCrawl();
+            //-------------------NameChecking---------------------------------------------------------------------------
             scoper.procRules();
+            scoper.varCrawl();
             output = parser.getOutput().toString(0);
             //----------------------------------------------------------------------------------------------------------
             writer.append(output);
