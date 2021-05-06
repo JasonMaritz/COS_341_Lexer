@@ -144,7 +144,7 @@ public class TreeCrawler {
         if(curr.getData("symbol").equals("LOOP")&&curr.getChildren().elementAt(0).getData("symbol").equals("for")){
             SyntaxNode child = curr.getChildren().get(1).getChildren().get(0);
             //child is the var
-            child.addInternalName(child.getData("symbol").concat(String.valueOf(nextName++)));
+            child.addInternalName("V".concat(String.valueOf(nextName++)));
             vars.add(child);
         }
 
@@ -162,7 +162,7 @@ public class TreeCrawler {
                     }
                 }
                 if(child.getData("internalName")==null){
-                    child.addInternalName(child.getData("symbol").concat(String.valueOf(nextName++)));
+                    child.addInternalName("V".concat(String.valueOf(nextName++)));
                 }
                 vars.add(child);
             }
