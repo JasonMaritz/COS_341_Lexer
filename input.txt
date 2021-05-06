@@ -2,5 +2,5 @@ for(varname=0;varname<varname1;varname1=add(varname1,1)){for(varname=0;varname<v
 for(varname=0;varname<varname1;varname1=add(varname1,1)){for(varname=0;varname<varname1;varname1=add(varname1,1)){halt};for(varname=0;varname<varname1;varname1=add(varname1,1)){halt}};
 for(varname=0;varname<varname1;varname1=add(varname1,1)){for(varname=0;varname<varname1;varname1=add(varname1,1)){halt};for(varname=0;varname<varname1;varname1=add(varname1,1)){halt}};
 for(varname=0;varname<varname1;varname1=add(varname1,1)){for(varname=0;varname<varname1;varname1=add(varname1,1)){halt};for(varname=0;varname<varname1;varname1=add(varname1,1)){halt};for(varname=0;varname<varname1;varname1=add(varname1,1)){for(varname=0;varname<varname1;varname1=add(varname1,1)){halt};for(varname=0;varname<varname1;varname1=add(varname1,1)){halt}}}
-proc myproc { proc myprocs { halt }  }
+proc myproc { proc myprocs { proc myproc { halt } }  }
 proc myprocs { halt; }

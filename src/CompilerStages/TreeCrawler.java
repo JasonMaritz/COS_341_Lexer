@@ -89,12 +89,13 @@ public class TreeCrawler {
                 if(s.equals(ss))
                     continue;
                 //check parent scope
-                String temp, sName, ssName, sScope, ssScope;
+                String temp, sName, ssName, sScope, ssScope, ssFullscope, sFullscope;
                 int pos;
                 temp = s;
                 pos = temp.indexOf("#");
                 sName = temp.substring(0,pos);
                 temp = temp.substring(pos+1);
+                sFullscope = temp;
                 //get parent scope
                 if(temp.lastIndexOf(".") > 0)
                     sScope = temp.substring(0,temp.lastIndexOf("."));
@@ -104,6 +105,7 @@ public class TreeCrawler {
                 pos = temp.indexOf("#");
                 ssName = temp.substring(0,pos);
                 temp = temp.substring(pos+1);
+                ssFullscope = temp;
                 //get parent scope
                 if(temp.lastIndexOf(".") > 0)
                     ssScope = temp.substring(0,temp.lastIndexOf("."));
@@ -112,6 +114,11 @@ public class TreeCrawler {
                 if(sName.equals(ssName)&&sScope.equals(ssScope)){
                     treeRoot.error = true;
                     treeRoot.errMessage = "Procedures in same scope share a name: "+sName;
+                }
+
+                if(sName.equals(ssName)&&(ssFullscope.indexOf(sFullscope)!=-1)){
+                    treeRoot.error = true;
+                    treeRoot.errMessage = "Procedure cannot redefine an ancestor procedure";
                 }
             }
         }
