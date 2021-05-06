@@ -116,7 +116,7 @@ public class TreeCrawler {
                     treeRoot.errMessage = "Procedures in same scope share a name: "+sName;
                 }
 
-                if(sName.equals(ssName)&&(ssFullscope.indexOf(sFullscope)!=-1)){
+                if(sName.equals(ssName)&&(ssFullscope.contains(sFullscope))){
                     treeRoot.error = true;
                     treeRoot.errMessage = "Procedure cannot redefine an ancestor procedure";
                 }
