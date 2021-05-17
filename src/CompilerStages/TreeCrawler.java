@@ -43,6 +43,14 @@ public class TreeCrawler {
     public void procRules(){
         procVarCrawl();
         procCrawl();
+        forLoopCrawl();
+        procRename();
+    }
+    private void forLoopCrawl(){
+
+    }
+    private void procRename(){
+
     }
     public void procVarCrawl(){
         Vector<String> varnames = new Vector<>();
@@ -120,7 +128,7 @@ public class TreeCrawler {
             }
         }
     }
-    public void procCrawl(SyntaxNode curr, Vector<String> procs){
+    private void procCrawl(SyntaxNode curr, Vector<String> procs){
         if(curr == null){
             return;
         }
