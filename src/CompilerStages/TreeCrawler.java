@@ -43,11 +43,37 @@ public class TreeCrawler {
     public void procRules(){
         procVarCrawl();
         procCrawl();
-        forLoopCrawl();
+        forLoopCrawl(treeRoot);
         procRename();
     }
-    private void forLoopCrawl(){
-
+    private void forLoopCrawl(SyntaxNode curr){
+        if(curr != null){
+            if(curr.getData("symbol").equals("LOOP")&&curr.getChildren().elementAt(0).getData("symbol").equals("for")){
+                //check for loop and call check assignment
+                SyntaxNode tempV1, tempV2, tempV3, tempV4;
+                tempV1 = curr.getChildren().elementAt(1).getChildren().elementAt(1);
+                tempV2 = curr.getChildren().elementAt(1).getChildren().elementAt(2);
+                tempV3 = curr.getChildren().elementAt(1).getChildren().elementAt(4);
+                tempV4 = curr.getChildren().elementAt(1).getChildren().elementAt(5);
+                if(!(tempV1.getData("internalName").equals(tempV2.getData("internalName")))||
+                        !(tempV1.getData("internalName").equals(tempV3.getData("internalName")))||
+                        !(tempV1.getData("internalName").equals(tempV4.getData("internalName")))){
+                    treeRoot.error = true;
+                    treeRoot.errMessage = "for loop contains incorrect variable structure in declaration";
+                }
+                if(checkAssignment(curr, tempV1.getData("internalName"))){
+                   treeRoot.error = true;
+                   treeRoot.errMessage = "for loop counting variable : " + tempV1.getData("internalName") +
+                                         ", reassigned";
+                }
+            }
+            for(SyntaxNode c: curr.getChildren()){
+                forLoopCrawl(c);
+            }
+        }
+    }
+    private boolean checkAssignment(SyntaxNode curr, String intName){
+        return false;
     }
     private void procRename(){
 
@@ -74,7 +100,6 @@ public class TreeCrawler {
             case 1:
                 if(curr.getData("symbol").equals(("PROC"))){
                     if(names.contains(curr.getChildren().elementAt(1).getData("symbol"))){
-                        //error
                         treeRoot.error = true;
                         treeRoot.errMessage = "Proc "+curr.getChildren().elementAt(1).getData("symbol")+
                                 " shares name with variable";
