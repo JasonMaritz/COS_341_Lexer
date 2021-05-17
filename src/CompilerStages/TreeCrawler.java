@@ -8,7 +8,8 @@ public class TreeCrawler {
     SyntaxNode treeRoot;
     Vector<String> usedScopes;
     int nextScope=1;
-    int nextName = 1;
+    int nextVarName = 1;
+    int nextProcName = 1;
 
     public TreeCrawler(SyntaxNode root){
         usedScopes = new Vector<>();
@@ -101,19 +102,6 @@ public class TreeCrawler {
     public void procRename(){
         procRename(treeRoot);
     }
-    private boolean checkAssignment(SyntaxNode curr, String intName){
-        if(curr != null){
-            if(curr.getData("symbol").equals("ASSIGN")&&curr.getChildren().elementAt(0).getChildren().elementAt(0).getData("internalName").equals(intName)){
-                return true;
-            }
-            for(SyntaxNode c: curr.getChildren()){
-                if(checkAssignment(c, intName)){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
     private void procVarCrawl(SyntaxNode curr, Vector<String> names, int mode){
         //mode 0 means add varnames
         //mode 1 means check proc names
@@ -162,7 +150,7 @@ public class TreeCrawler {
         if(curr.getData("symbol").equals("LOOP")&&curr.getChildren().elementAt(0).getData("symbol").equals("for")){
             SyntaxNode child = curr.getChildren().get(1).getChildren().get(0);
             //child is the var
-            child.addInternalName("V".concat(String.valueOf(nextName++)));
+            child.addInternalName("V".concat(String.valueOf(nextVarName++)));
             vars.add(child);
         }
 
@@ -180,7 +168,7 @@ public class TreeCrawler {
                     }
                 }
                 if(child.getData("internalName")==null){
-                    child.addInternalName("V".concat(String.valueOf(nextName++)));
+                    child.addInternalName("V".concat(String.valueOf(nextVarName++)));
                 }
                 vars.add(child);
             }
@@ -218,7 +206,20 @@ public class TreeCrawler {
             }
         }
     }
+    private boolean checkAssignment(SyntaxNode curr, String intName){
+        if(curr != null){
+            if(curr.getData("symbol").equals("ASSIGN")&&curr.getChildren().elementAt(0).getChildren().elementAt(0).getData("internalName").equals(intName)){
+                return true;
+            }
+            for(SyntaxNode c: curr.getChildren()){
+                if(checkAssignment(c, intName)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     private void procRename(SyntaxNode curr){
-
+        //TODO:Implement procedure renaming
     }
 }
