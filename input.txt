@@ -2,7 +2,6 @@ scope = 20;
 scope = 30;
 scopes = 40;
 for(scope = 0; scope<scopes; scope=add(scope,1)){
-    scope = 20;
     scopes = 30;
     for(scopes = 0; scopes<scope; scopes = add(scopes,1)){
         newvar=20
@@ -12,8 +11,7 @@ newvar = 40;
 nf = 0;
 proc myproc{
     newvar = 30;
-    for(newvar=0; scopes<scope; scope=add(scope,1)){
-        newvar=20;
+    for(newvar=0; newvar<scope; newvar=add(newvar,1)){
         n=0;
         nn=0;
         ns=0;

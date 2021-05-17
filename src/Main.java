@@ -36,8 +36,11 @@ public class Main {
             //-------------------NameChecking---------------------------------------------------------------------------
             scoper.procRules();
             scoper.varCrawl();
-            output = parser.getOutput().toString(0);
+            //-------------------ForLoopChecking AND ProcRenaming--------------------------------------------------------
+            scoper.loopCrawl();
+            scoper.procRename();
             //----------------------------------------------------------------------------------------------------------
+            output = parser.getOutput().toString(0);
             writer.append(output);
             writer.close();
         }catch (Exception e){

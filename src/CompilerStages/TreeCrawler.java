@@ -43,73 +43,11 @@ public class TreeCrawler {
     public void procRules(){
         procVarCrawl();
         procCrawl();
-        forLoopCrawl(treeRoot);
-        procRename();
-    }
-    private void forLoopCrawl(SyntaxNode curr){
-        if(curr != null){
-            if(curr.getData("symbol").equals("LOOP")&&curr.getChildren().elementAt(0).getData("symbol").equals("for")){
-                //check for loop and call check assignment
-                SyntaxNode tempV1, tempV2, tempV3, tempV4;
-                tempV1 = curr.getChildren().elementAt(1).getChildren().elementAt(1);
-                tempV2 = curr.getChildren().elementAt(1).getChildren().elementAt(2);
-                tempV3 = curr.getChildren().elementAt(1).getChildren().elementAt(4);
-                tempV4 = curr.getChildren().elementAt(1).getChildren().elementAt(5);
-                if(!(tempV1.getData("internalName").equals(tempV2.getData("internalName")))||
-                        !(tempV1.getData("internalName").equals(tempV3.getData("internalName")))||
-                        !(tempV1.getData("internalName").equals(tempV4.getData("internalName")))){
-                    treeRoot.error = true;
-                    treeRoot.errMessage = "for loop contains incorrect variable structure in declaration";
-                }
-                if(checkAssignment(curr, tempV1.getData("internalName"))){
-                   treeRoot.error = true;
-                   treeRoot.errMessage = "for loop counting variable : " + tempV1.getData("internalName") +
-                                         ", reassigned";
-                }
-            }
-            for(SyntaxNode c: curr.getChildren()){
-                forLoopCrawl(c);
-            }
-        }
-    }
-    private boolean checkAssignment(SyntaxNode curr, String intName){
-        return false;
-    }
-    private void procRename(){
-
     }
     public void procVarCrawl(){
         Vector<String> varnames = new Vector<>();
         procVarCrawl(treeRoot, varnames, 0);
         procVarCrawl(treeRoot, varnames, 1);
-    }
-    private void procVarCrawl(SyntaxNode curr, Vector<String> names, int mode){
-        //mode 0 means add varnames
-        //mode 1 means check proc names
-        if(curr == null){
-            return;
-        }
-        switch (mode){
-            case 0:
-                if(curr.getData("symbol").equals("VAR")){
-                    if(!names.contains(curr.getChildren().elementAt(0).getData("symbol"))){
-                        names.add(curr.getChildren().elementAt(0).getData("symbol"));
-                    }
-                }
-                break;
-            case 1:
-                if(curr.getData("symbol").equals(("PROC"))){
-                    if(names.contains(curr.getChildren().elementAt(1).getData("symbol"))){
-                        treeRoot.error = true;
-                        treeRoot.errMessage = "Proc "+curr.getChildren().elementAt(1).getData("symbol")+
-                                " shares name with variable";
-                    }
-                }
-                break;
-        }
-        for(SyntaxNode n: curr.getChildren()){
-            procVarCrawl(n, names, mode);
-        }
     }
     public void procCrawl(){
         Vector<String> procnames = new Vector<>();
@@ -153,6 +91,57 @@ public class TreeCrawler {
             }
         }
     }
+    public void varCrawl(){
+        Vector<SyntaxNode> vars = new Vector<>();
+        varCrawl(treeRoot, vars);
+    }
+    public void loopCrawl(){
+        forLoopCrawl(treeRoot);
+    }
+    public void procRename(){
+        procRename(treeRoot);
+    }
+    private boolean checkAssignment(SyntaxNode curr, String intName){
+        if(curr != null){
+            if(curr.getData("symbol").equals("ASSIGN")&&curr.getChildren().elementAt(0).getChildren().elementAt(0).getData("internalName").equals(intName)){
+                return true;
+            }
+            for(SyntaxNode c: curr.getChildren()){
+                if(checkAssignment(c, intName)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    private void procVarCrawl(SyntaxNode curr, Vector<String> names, int mode){
+        //mode 0 means add varnames
+        //mode 1 means check proc names
+        if(curr == null){
+            return;
+        }
+        switch (mode){
+            case 0:
+                if(curr.getData("symbol").equals("VAR")){
+                    if(!names.contains(curr.getChildren().elementAt(0).getData("symbol"))){
+                        names.add(curr.getChildren().elementAt(0).getData("symbol"));
+                    }
+                }
+                break;
+            case 1:
+                if(curr.getData("symbol").equals(("PROC"))){
+                    if(names.contains(curr.getChildren().elementAt(1).getData("symbol"))){
+                        treeRoot.error = true;
+                        treeRoot.errMessage = "Proc "+curr.getChildren().elementAt(1).getData("symbol")+
+                                " shares name with variable";
+                    }
+                }
+                break;
+        }
+        for(SyntaxNode n: curr.getChildren()){
+            procVarCrawl(n, names, mode);
+        }
+    }
     private void procCrawl(SyntaxNode curr, Vector<String> procs){
         if(curr == null){
             return;
@@ -165,10 +154,6 @@ public class TreeCrawler {
         for(SyntaxNode n: curr.getChildren()){
             procCrawl(n, procs);
         }
-    }
-    public void varCrawl(){
-        Vector<SyntaxNode> vars = new Vector<>();
-        varCrawl(treeRoot, vars);
     }
     private void varCrawl(SyntaxNode curr, Vector<SyntaxNode> vars){
         if(curr == null || curr.getNodeType().name().equals("TERMINAL"))
@@ -204,5 +189,36 @@ public class TreeCrawler {
         for(SyntaxNode node: curr.getChildren()){
             varCrawl(node, vars);
         }
+    }
+    private void forLoopCrawl(SyntaxNode curr){
+        if(curr != null){
+            if(curr.getData("symbol").equals("LOOP")&&curr.getChildren().elementAt(0).getData("symbol").equals("for")){
+                //check for loop and call check assignment
+                SyntaxNode tempV1, tempV2, tempV3, tempV4;
+                tempV1 = curr.getChildren().elementAt(1).getChildren().elementAt(0);
+                tempV2 = curr.getChildren().elementAt(2).getChildren().elementAt(0);
+                tempV3 = curr.getChildren().elementAt(4).getChildren().elementAt(0);
+                tempV4 = curr.getChildren().elementAt(5).getChildren().elementAt(0);
+                if(!(tempV1.getData("internalName").equals(tempV2.getData("internalName")))||
+                        !(tempV1.getData("internalName").equals(tempV3.getData("internalName")))||
+                        !(tempV1.getData("internalName").equals(tempV4.getData("internalName")))){
+                    treeRoot.error = true;
+                    treeRoot.errMessage = "for loop contains incorrect variable structure in declaration";
+                    return;
+                }
+                if(checkAssignment(curr.getChildren().elementAt(6), tempV1.getData("internalName"))){
+                    treeRoot.error = true;
+                    treeRoot.errMessage = "for loop counting variable : " + tempV1.getData("symbol") +
+                            ", reassigned";
+                    return;
+                }
+            }
+            for(SyntaxNode c: curr.getChildren()){
+                forLoopCrawl(c);
+            }
+        }
+    }
+    private void procRename(SyntaxNode curr){
+
     }
 }
