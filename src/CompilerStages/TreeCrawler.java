@@ -182,14 +182,16 @@ public class TreeCrawler {
         if(curr != null){
             if(curr.getData("symbol").equals("LOOP")&&curr.getChildren().elementAt(0).getData("symbol").equals("for")){
                 //check for loop and call check assignment
-                SyntaxNode tempV1, tempV2, tempV3, tempV4;
+                SyntaxNode tempV1, tempV2, tempV3, tempV4, tempV5;
                 tempV1 = curr.getChildren().elementAt(1).getChildren().elementAt(0);
                 tempV2 = curr.getChildren().elementAt(2).getChildren().elementAt(0);
-                tempV3 = curr.getChildren().elementAt(4).getChildren().elementAt(0);
-                tempV4 = curr.getChildren().elementAt(5).getChildren().elementAt(0);
+                tempV3 = curr.getChildren().elementAt(3).getChildren().elementAt(0);
+                tempV4 = curr.getChildren().elementAt(4).getChildren().elementAt(0);
+                tempV5 = curr.getChildren().elementAt(5).getChildren().elementAt(0);
                 if(!(tempV1.getData("internalName").equals(tempV2.getData("internalName")))||
-                        !(tempV1.getData("internalName").equals(tempV3.getData("internalName")))||
-                        !(tempV1.getData("internalName").equals(tempV4.getData("internalName")))){
+                        !(tempV1.getData("internalName").equals(tempV4.getData("internalName")))||
+                        !(tempV1.getData("internalName").equals(tempV5.getData("internalName")))||
+                        (tempV1.getData("internalName").equals(tempV3.getData("internalName")))){
                     treeRoot.error = true;
                     treeRoot.errMessage = "for loop contains incorrect variable structure in declaration";
                     return;
