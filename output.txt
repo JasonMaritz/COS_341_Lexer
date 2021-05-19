@@ -4,252 +4,71 @@ NONTERMINAL: PROGPRIME, Scope: 0
 			NONTERMINAL: INSTR, Scope: 0
 				NONTERMINAL: ASSIGN, Scope: 0
 					NONTERMINAL: VAR, Scope: 0
-						TERMINAL: scope, Scope: 0, internalName: V1
+						TERMINAL: variables, Scope: 0, internalName: V1
 					NONTERMINAL: NUMEXPR, Scope: 0
-						TERMINAL: 20, Scope: 0
+						TERMINAL: 40, Scope: 0
 			NONTERMINAL: CODE, Scope: 0
 				NONTERMINAL: INSTR, Scope: 0
 					NONTERMINAL: ASSIGN, Scope: 0
 						NONTERMINAL: VAR, Scope: 0
-							TERMINAL: scope, Scope: 0, internalName: V1
+							TERMINAL: variables, Scope: 0, internalName: V1
 						NONTERMINAL: NUMEXPR, Scope: 0
-							TERMINAL: 30, Scope: 0
+							TERMINAL: 50, Scope: 0
 				NONTERMINAL: CODE, Scope: 0
 					NONTERMINAL: INSTR, Scope: 0
 						NONTERMINAL: ASSIGN, Scope: 0
 							NONTERMINAL: VAR, Scope: 0
-								TERMINAL: scopes, Scope: 0, internalName: V2
+								TERMINAL: vars, Scope: 0, internalName: V2
 							NONTERMINAL: NUMEXPR, Scope: 0
-								TERMINAL: 40, Scope: 0
+								TERMINAL: -15, Scope: 0
 					NONTERMINAL: CODE, Scope: 0
 						NONTERMINAL: INSTR, Scope: 0
-							NONTERMINAL: LOOP, Scope: 0.1
-								TERMINAL: for, Scope: 0.1
-								NONTERMINAL: VAR, Scope: 0.1
-									TERMINAL: scope, Scope: 0.1, internalName: V3
-								NONTERMINAL: VAR, Scope: 0.1
-									TERMINAL: scope, Scope: 0.1, internalName: V3
-								NONTERMINAL: VAR, Scope: 0.1
-									TERMINAL: scopes, Scope: 0.1, internalName: V2
-								NONTERMINAL: VAR, Scope: 0.1
-									TERMINAL: scope, Scope: 0.1, internalName: V3
-								NONTERMINAL: VAR, Scope: 0.1
-									TERMINAL: scope, Scope: 0.1, internalName: V3
-								NONTERMINAL: CODE, Scope: 0.1
-									NONTERMINAL: INSTR, Scope: 0.1
-										NONTERMINAL: ASSIGN, Scope: 0.1
-											NONTERMINAL: VAR, Scope: 0.1
-												TERMINAL: scopes, Scope: 0.1, internalName: V2
-											NONTERMINAL: NUMEXPR, Scope: 0.1
-												TERMINAL: 30, Scope: 0.1
-									NONTERMINAL: CODE, Scope: 0.1
-										NONTERMINAL: INSTR, Scope: 0.1
-											NONTERMINAL: LOOP, Scope: 0.1.2
-												TERMINAL: for, Scope: 0.1.2
-												NONTERMINAL: VAR, Scope: 0.1.2
-													TERMINAL: scopes, Scope: 0.1.2, internalName: V4
-												NONTERMINAL: VAR, Scope: 0.1.2
-													TERMINAL: scopes, Scope: 0.1.2, internalName: V4
-												NONTERMINAL: VAR, Scope: 0.1.2
-													TERMINAL: scope, Scope: 0.1.2, internalName: V3
-												NONTERMINAL: VAR, Scope: 0.1.2
-													TERMINAL: scopes, Scope: 0.1.2, internalName: V4
-												NONTERMINAL: VAR, Scope: 0.1.2
-													TERMINAL: scopes, Scope: 0.1.2, internalName: V4
-												NONTERMINAL: CODE, Scope: 0.1.2
-													NONTERMINAL: INSTR, Scope: 0.1.2
-														NONTERMINAL: ASSIGN, Scope: 0.1.2
-															NONTERMINAL: VAR, Scope: 0.1.2
-																TERMINAL: newvar, Scope: 0.1.2, internalName: V5
-															NONTERMINAL: NUMEXPR, Scope: 0.1.2
-																TERMINAL: 20, Scope: 0.1.2
+							NONTERMINAL: CALL, Scope: 0
+								TERMINAL: calca, Scope: 0, internalName: p0
 						NONTERMINAL: CODE, Scope: 0
 							NONTERMINAL: INSTR, Scope: 0
-								NONTERMINAL: ASSIGN, Scope: 0
-									NONTERMINAL: VAR, Scope: 0
-										TERMINAL: newvar, Scope: 0, internalName: V6
-									NONTERMINAL: NUMEXPR, Scope: 0
-										TERMINAL: 40, Scope: 0
-							NONTERMINAL: CODE, Scope: 0
-								NONTERMINAL: INSTR, Scope: 0
-									NONTERMINAL: ASSIGN, Scope: 0
-										NONTERMINAL: VAR, Scope: 0
-											TERMINAL: nf, Scope: 0, internalName: V7
-										NONTERMINAL: NUMEXPR, Scope: 0
-											TERMINAL: 0, Scope: 0
+								NONTERMINAL: CALL, Scope: 0
+									TERMINAL: calcb, Scope: 0
 		NONTERMINAL: PROC_DEFS, Scope: 0
+			NONTERMINAL: PROC, Scope: 0.1
+				TERMINAL: proc, Scope: 0.1
+				TERMINAL: calca, Scope: 0.1, internalName: p0
+				NONTERMINAL: PROG, Scope: 0.1
+					NONTERMINAL: CODE, Scope: 0.1
+						NONTERMINAL: INSTR, Scope: 0.1
+							NONTERMINAL: ASSIGN, Scope: 0.1
+								NONTERMINAL: VAR, Scope: 0.1
+									TERMINAL: thisvar, Scope: 0.1, internalName: V3
+								NONTERMINAL: NUMEXPR, Scope: 0.1
+									TERMINAL: 20, Scope: 0.1
+						NONTERMINAL: CODE, Scope: 0.1
+							NONTERMINAL: INSTR, Scope: 0.1
+								NONTERMINAL: CALL, Scope: 0.1
+									TERMINAL: calca, Scope: 0.1, internalName: p0
+							NONTERMINAL: CODE, Scope: 0.1
+								NONTERMINAL: INSTR, Scope: 0.1
+									NONTERMINAL: CALL, Scope: 0.1
+										TERMINAL: calcb, Scope: 0.1, internalName: p1
+								NONTERMINAL: CODE, Scope: 0.1
+									NONTERMINAL: INSTR, Scope: 0.1
+										NONTERMINAL: CALL, Scope: 0.1
+											TERMINAL: calcc, Scope: 0.1
+					NONTERMINAL: PROC_DEFS, Scope: 0.1
+						NONTERMINAL: PROC, Scope: 0.1.2
+							TERMINAL: proc, Scope: 0.1.2
+							TERMINAL: calcb, Scope: 0.1.2, internalName: p1
+							NONTERMINAL: PROG, Scope: 0.1.2
+								NONTERMINAL: CODE, Scope: 0.1.2
+									NONTERMINAL: INSTR, Scope: 0.1.2
+										TERMINAL: halt, Scope: 0.1.2
 			NONTERMINAL: PROC, Scope: 0.3
 				TERMINAL: proc, Scope: 0.3
-				TERMINAL: myproc, Scope: 0.3
+				TERMINAL: calcc, Scope: 0.3
 				NONTERMINAL: PROG, Scope: 0.3
 					NONTERMINAL: CODE, Scope: 0.3
 						NONTERMINAL: INSTR, Scope: 0.3
 							NONTERMINAL: ASSIGN, Scope: 0.3
 								NONTERMINAL: VAR, Scope: 0.3
-									TERMINAL: newvar, Scope: 0.3, internalName: V6
+									TERMINAL: lastproccall, Scope: 0.3, internalName: V4
 								NONTERMINAL: NUMEXPR, Scope: 0.3
-									TERMINAL: 30, Scope: 0.3
-						NONTERMINAL: CODE, Scope: 0.3
-							NONTERMINAL: INSTR, Scope: 0.3
-								NONTERMINAL: LOOP, Scope: 0.3.4
-									TERMINAL: for, Scope: 0.3.4
-									NONTERMINAL: VAR, Scope: 0.3.4
-										TERMINAL: newvar, Scope: 0.3.4, internalName: V8
-									NONTERMINAL: VAR, Scope: 0.3.4
-										TERMINAL: newvar, Scope: 0.3.4, internalName: V8
-									NONTERMINAL: VAR, Scope: 0.3.4
-										TERMINAL: scope, Scope: 0.3.4, internalName: V1
-									NONTERMINAL: VAR, Scope: 0.3.4
-										TERMINAL: newvar, Scope: 0.3.4, internalName: V8
-									NONTERMINAL: VAR, Scope: 0.3.4
-										TERMINAL: newvar, Scope: 0.3.4, internalName: V8
-									NONTERMINAL: CODE, Scope: 0.3.4
-										NONTERMINAL: INSTR, Scope: 0.3.4
-											NONTERMINAL: ASSIGN, Scope: 0.3.4
-												NONTERMINAL: VAR, Scope: 0.3.4
-													TERMINAL: n, Scope: 0.3.4, internalName: V9
-												NONTERMINAL: NUMEXPR, Scope: 0.3.4
-													TERMINAL: 0, Scope: 0.3.4
-										NONTERMINAL: CODE, Scope: 0.3.4
-											NONTERMINAL: INSTR, Scope: 0.3.4
-												NONTERMINAL: ASSIGN, Scope: 0.3.4
-													NONTERMINAL: VAR, Scope: 0.3.4
-														TERMINAL: nn, Scope: 0.3.4, internalName: V10
-													NONTERMINAL: NUMEXPR, Scope: 0.3.4
-														TERMINAL: 0, Scope: 0.3.4
-											NONTERMINAL: CODE, Scope: 0.3.4
-												NONTERMINAL: INSTR, Scope: 0.3.4
-													NONTERMINAL: ASSIGN, Scope: 0.3.4
-														NONTERMINAL: VAR, Scope: 0.3.4
-															TERMINAL: ns, Scope: 0.3.4, internalName: V11
-														NONTERMINAL: NUMEXPR, Scope: 0.3.4
-															TERMINAL: 0, Scope: 0.3.4
-												NONTERMINAL: CODE, Scope: 0.3.4
-													NONTERMINAL: INSTR, Scope: 0.3.4
-														NONTERMINAL: ASSIGN, Scope: 0.3.4
-															NONTERMINAL: VAR, Scope: 0.3.4
-																TERMINAL: ne, Scope: 0.3.4, internalName: V12
-															NONTERMINAL: NUMEXPR, Scope: 0.3.4
-																TERMINAL: 0, Scope: 0.3.4
-													NONTERMINAL: CODE, Scope: 0.3.4
-														NONTERMINAL: INSTR, Scope: 0.3.4
-															NONTERMINAL: ASSIGN, Scope: 0.3.4
-																NONTERMINAL: VAR, Scope: 0.3.4
-																	TERMINAL: nw, Scope: 0.3.4, internalName: V13
-																NONTERMINAL: NUMEXPR, Scope: 0.3.4
-																	TERMINAL: 0, Scope: 0.3.4
-														NONTERMINAL: CODE, Scope: 0.3.4
-															NONTERMINAL: INSTR, Scope: 0.3.4
-																NONTERMINAL: ASSIGN, Scope: 0.3.4
-																	NONTERMINAL: VAR, Scope: 0.3.4
-																		TERMINAL: nq, Scope: 0.3.4, internalName: V14
-																	NONTERMINAL: NUMEXPR, Scope: 0.3.4
-																		TERMINAL: 0, Scope: 0.3.4
-															NONTERMINAL: CODE, Scope: 0.3.4
-																NONTERMINAL: INSTR, Scope: 0.3.4
-																	NONTERMINAL: ASSIGN, Scope: 0.3.4
-																		NONTERMINAL: VAR, Scope: 0.3.4
-																			TERMINAL: nr, Scope: 0.3.4, internalName: V15
-																		NONTERMINAL: NUMEXPR, Scope: 0.3.4
-																			TERMINAL: 0, Scope: 0.3.4
-																NONTERMINAL: CODE, Scope: 0.3.4
-																	NONTERMINAL: INSTR, Scope: 0.3.4
-																		NONTERMINAL: ASSIGN, Scope: 0.3.4
-																			NONTERMINAL: VAR, Scope: 0.3.4
-																				TERMINAL: nt, Scope: 0.3.4, internalName: V16
-																			NONTERMINAL: NUMEXPR, Scope: 0.3.4
-																				TERMINAL: 0, Scope: 0.3.4
-																	NONTERMINAL: CODE, Scope: 0.3.4
-																		NONTERMINAL: INSTR, Scope: 0.3.4
-																			NONTERMINAL: ASSIGN, Scope: 0.3.4
-																				NONTERMINAL: VAR, Scope: 0.3.4
-																					TERMINAL: ny, Scope: 0.3.4, internalName: V17
-																				NONTERMINAL: NUMEXPR, Scope: 0.3.4
-																					TERMINAL: 0, Scope: 0.3.4
-																		NONTERMINAL: CODE, Scope: 0.3.4
-																			NONTERMINAL: INSTR, Scope: 0.3.4
-																				NONTERMINAL: ASSIGN, Scope: 0.3.4
-																					NONTERMINAL: VAR, Scope: 0.3.4
-																						TERMINAL: nh, Scope: 0.3.4, internalName: V18
-																					NONTERMINAL: NUMEXPR, Scope: 0.3.4
-																						TERMINAL: 0, Scope: 0.3.4
-																			NONTERMINAL: CODE, Scope: 0.3.4
-																				NONTERMINAL: INSTR, Scope: 0.3.4
-																					NONTERMINAL: ASSIGN, Scope: 0.3.4
-																						NONTERMINAL: VAR, Scope: 0.3.4
-																							TERMINAL: ng, Scope: 0.3.4, internalName: V19
-																						NONTERMINAL: NUMEXPR, Scope: 0.3.4
-																							TERMINAL: 0, Scope: 0.3.4
-																				NONTERMINAL: CODE, Scope: 0.3.4
-																					NONTERMINAL: INSTR, Scope: 0.3.4
-																						NONTERMINAL: ASSIGN, Scope: 0.3.4
-																							NONTERMINAL: VAR, Scope: 0.3.4
-																								TERMINAL: nf, Scope: 0.3.4, internalName: V7
-																							NONTERMINAL: NUMEXPR, Scope: 0.3.4
-																								TERMINAL: 0, Scope: 0.3.4
-																					NONTERMINAL: CODE, Scope: 0.3.4
-																						NONTERMINAL: INSTR, Scope: 0.3.4
-																							NONTERMINAL: ASSIGN, Scope: 0.3.4
-																								NONTERMINAL: VAR, Scope: 0.3.4
-																									TERMINAL: nf, Scope: 0.3.4, internalName: V7
-																								NONTERMINAL: NUMEXPR, Scope: 0.3.4
-																									TERMINAL: 0, Scope: 0.3.4
-																						NONTERMINAL: CODE, Scope: 0.3.4
-																							NONTERMINAL: INSTR, Scope: 0.3.4
-																								NONTERMINAL: LOOP, Scope: 0.3.4.5
-																									TERMINAL: for, Scope: 0.3.4.5
-																									NONTERMINAL: VAR, Scope: 0.3.4.5
-																										TERMINAL: nf, Scope: 0.3.4.5, internalName: V20
-																									NONTERMINAL: VAR, Scope: 0.3.4.5
-																										TERMINAL: nf, Scope: 0.3.4.5, internalName: V20
-																									NONTERMINAL: VAR, Scope: 0.3.4.5
-																										TERMINAL: nr, Scope: 0.3.4.5, internalName: V15
-																									NONTERMINAL: VAR, Scope: 0.3.4.5
-																										TERMINAL: nf, Scope: 0.3.4.5, internalName: V20
-																									NONTERMINAL: VAR, Scope: 0.3.4.5
-																										TERMINAL: nf, Scope: 0.3.4.5, internalName: V20
-																									NONTERMINAL: CODE, Scope: 0.3.4.5
-																										NONTERMINAL: INSTR, Scope: 0.3.4.5
-																											NONTERMINAL: LOOP, Scope: 0.3.4.5.6
-																												TERMINAL: for, Scope: 0.3.4.5.6
-																												NONTERMINAL: VAR, Scope: 0.3.4.5.6
-																													TERMINAL: nf, Scope: 0.3.4.5.6, internalName: V21
-																												NONTERMINAL: VAR, Scope: 0.3.4.5.6
-																													TERMINAL: nf, Scope: 0.3.4.5.6, internalName: V21
-																												NONTERMINAL: VAR, Scope: 0.3.4.5.6
-																													TERMINAL: nr, Scope: 0.3.4.5.6, internalName: V15
-																												NONTERMINAL: VAR, Scope: 0.3.4.5.6
-																													TERMINAL: nf, Scope: 0.3.4.5.6, internalName: V21
-																												NONTERMINAL: VAR, Scope: 0.3.4.5.6
-																													TERMINAL: nf, Scope: 0.3.4.5.6, internalName: V21
-																												NONTERMINAL: CODE, Scope: 0.3.4.5.6
-																													NONTERMINAL: INSTR, Scope: 0.3.4.5.6
-																														NONTERMINAL: LOOP, Scope: 0.3.4.5.6.7
-																															TERMINAL: for, Scope: 0.3.4.5.6.7
-																															NONTERMINAL: VAR, Scope: 0.3.4.5.6.7
-																																TERMINAL: nf, Scope: 0.3.4.5.6.7, internalName: V22
-																															NONTERMINAL: VAR, Scope: 0.3.4.5.6.7
-																																TERMINAL: nf, Scope: 0.3.4.5.6.7, internalName: V22
-																															NONTERMINAL: VAR, Scope: 0.3.4.5.6.7
-																																TERMINAL: nr, Scope: 0.3.4.5.6.7, internalName: V15
-																															NONTERMINAL: VAR, Scope: 0.3.4.5.6.7
-																																TERMINAL: nf, Scope: 0.3.4.5.6.7, internalName: V22
-																															NONTERMINAL: VAR, Scope: 0.3.4.5.6.7
-																																TERMINAL: nf, Scope: 0.3.4.5.6.7, internalName: V22
-																															NONTERMINAL: CODE, Scope: 0.3.4.5.6.7
-																																NONTERMINAL: INSTR, Scope: 0.3.4.5.6.7
-																																	NONTERMINAL: LOOP, Scope: 0.3.4.5.6.7.8
-																																		TERMINAL: for, Scope: 0.3.4.5.6.7.8
-																																		NONTERMINAL: VAR, Scope: 0.3.4.5.6.7.8
-																																			TERMINAL: nf, Scope: 0.3.4.5.6.7.8, internalName: V23
-																																		NONTERMINAL: VAR, Scope: 0.3.4.5.6.7.8
-																																			TERMINAL: nf, Scope: 0.3.4.5.6.7.8, internalName: V23
-																																		NONTERMINAL: VAR, Scope: 0.3.4.5.6.7.8
-																																			TERMINAL: nr, Scope: 0.3.4.5.6.7.8, internalName: V15
-																																		NONTERMINAL: VAR, Scope: 0.3.4.5.6.7.8
-																																			TERMINAL: nf, Scope: 0.3.4.5.6.7.8, internalName: V23
-																																		NONTERMINAL: VAR, Scope: 0.3.4.5.6.7.8
-																																			TERMINAL: nf, Scope: 0.3.4.5.6.7.8, internalName: V23
-																																		NONTERMINAL: CODE, Scope: 0.3.4.5.6.7.8
-																																			NONTERMINAL: INSTR, Scope: 0.3.4.5.6.7.8
-																																				TERMINAL: halt, Scope: 0.3.4.5.6.7.8
+									TERMINAL: 100, Scope: 0.3

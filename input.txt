@@ -1,38 +1,17 @@
-scope = 20;
-scope = 30;
-scopes = 40;
-for(scope = 0; scope<scopes; scope=add(scope,1)){
-    scopes = 30;
-    for(scopes = 0; scopes<scope; scopes = add(scopes,1)){
-        newvar=20
+variables = 40;
+variables= 50;
+vars = -15;
+calca;
+calcb;
+proc calca{
+    thisvar = 20;
+    calca;
+    calcb;
+    calcc;
+    proc calcb{
+        halt;
     }
-};
-newvar = 40;
-nf = 0;
-proc myproc{
-    newvar = 30;
-    for(newvar=0; newvar<scope; newvar=add(newvar,1)){
-        n=0;
-        nn=0;
-        ns=0;
-        ne=0;
-        nw=0;
-        nq=0;
-        nr=0;
-        nt=0;
-        ny=0;
-        nh=0;
-        ng=0;
-        nf=0;
-        nf=0;
-        for(nf=0; nf<nr; nf = add(nf,1)){
-            for(nf=0; nf<nr; nf = add(nf,1)){
-                for(nf=0; nf<nr; nf = add(nf,1)){
-                    for(nf=0; nf<nr; nf = add(nf,1)){
-                        halt
-                    }
-                }
-            }
-        }
-    }
+}
+proc calcc{
+    lastproccall = 100
 }

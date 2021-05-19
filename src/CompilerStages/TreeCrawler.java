@@ -9,7 +9,7 @@ public class TreeCrawler {
     Vector<String> usedScopes;
     int nextScope=1;
     int nextVarName = 1;
-    int nextProcName = 1;
+    int nextProcName = 0;
 
     public TreeCrawler(SyntaxNode root){
         usedScopes = new Vector<>();
@@ -100,7 +100,8 @@ public class TreeCrawler {
         forLoopCrawl(treeRoot);
     }
     public void procRename(){
-        procRename(treeRoot);
+        procRename(treeRoot, null, null);
+        treePrune();
     }
     private void procVarCrawl(SyntaxNode curr, Vector<String> names, int mode){
         //mode 0 means add varnames
@@ -221,7 +222,61 @@ public class TreeCrawler {
         }
         return false;
     }
-    private void procRename(SyntaxNode curr){
-        //TODO:Implement procedure renaming
+    private void procRename(SyntaxNode curr, SyntaxNode AncestorProg, SyntaxNode currProc){
+        if(curr == null){
+            return;
+        }else if(curr.getData("symbol").equals("PROG")){
+            for(SyntaxNode c: curr.getChildren()){
+                procRename(c, curr, currProc);
+            }
+        }else if(curr.getData("symbol").equals("PROC")){
+            for(SyntaxNode c: curr.getChildren()){
+                procRename(c, AncestorProg, curr);
+            }
+        }else if(curr.getData("symbol").equals("CALL")){
+            //check rules and rename matching func
+            String procname = curr.getChildren().elementAt(0).getData("symbol");
+
+            if(currProc!=null&&currProc.getChildren().elementAt(1).getData("symbol").equals(procname)){
+                //recursive call matched
+
+                if(currProc.getChildren().elementAt(1).getData("internalName")!= null){
+                    curr.getChildren().elementAt(0).addInternalName(currProc.getChildren().elementAt(1).getData("internalName"));
+                }
+            }else{
+                //check prog procs for match
+                SyntaxNode ProcNode = AncestorProg.getChildren().elementAt(1);
+                SyntaxNode calledProc = curr.getChildren().elementAt(0);
+                if(ProcNode!=null){
+                    for(SyntaxNode c: ProcNode.getChildren()){
+                        if(c.getData("symbol").equals("PROC")){
+                            SyntaxNode tempProc = c.getChildren().elementAt(1);
+                            if(tempProc.getData("symbol").equals(calledProc.getData("symbol"))){
+                                if (tempProc.getData("internalName") == null) {
+                                    tempProc.addInternalName("p" + nextProcName++);
+                                }
+                                calledProc.addInternalName(tempProc.getData("internalName"));
+                            }
+                        }
+                    }
+                }else{
+                    if(!treeRoot.error){
+                        treeRoot.error = true;
+                        treeRoot.errMessage = "Procedure without definition called";
+                    }
+                }
+            }
+            for(SyntaxNode c: curr.getChildren()){
+                procRename(c, AncestorProg, currProc);
+            }
+        }else{
+            //recur for all children
+            for(SyntaxNode c: curr.getChildren()){
+                procRename(c, AncestorProg, currProc);
+            }
+        }
+    }
+    private void treePrune(){
+
     }
 }
