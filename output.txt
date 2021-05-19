@@ -25,10 +25,6 @@ NONTERMINAL: PROGPRIME, Scope: 0
 						NONTERMINAL: INSTR, Scope: 0
 							NONTERMINAL: CALL, Scope: 0
 								TERMINAL: calca, Scope: 0, internalName: p0
-						NONTERMINAL: CODE, Scope: 0
-							NONTERMINAL: INSTR, Scope: 0
-								NONTERMINAL: CALL, Scope: 0
-									TERMINAL: calcb, Scope: 0
 		NONTERMINAL: PROC_DEFS, Scope: 0
 			NONTERMINAL: PROC, Scope: 0.1
 				TERMINAL: proc, Scope: 0.1
@@ -49,10 +45,6 @@ NONTERMINAL: PROGPRIME, Scope: 0
 								NONTERMINAL: INSTR, Scope: 0.1
 									NONTERMINAL: CALL, Scope: 0.1
 										TERMINAL: calcb, Scope: 0.1, internalName: p1
-								NONTERMINAL: CODE, Scope: 0.1
-									NONTERMINAL: INSTR, Scope: 0.1
-										NONTERMINAL: CALL, Scope: 0.1
-											TERMINAL: calcc, Scope: 0.1
 					NONTERMINAL: PROC_DEFS, Scope: 0.1
 						NONTERMINAL: PROC, Scope: 0.1.2
 							TERMINAL: proc, Scope: 0.1.2
@@ -61,14 +53,3 @@ NONTERMINAL: PROGPRIME, Scope: 0
 								NONTERMINAL: CODE, Scope: 0.1.2
 									NONTERMINAL: INSTR, Scope: 0.1.2
 										TERMINAL: halt, Scope: 0.1.2
-			NONTERMINAL: PROC, Scope: 0.3
-				TERMINAL: proc, Scope: 0.3
-				TERMINAL: calcc, Scope: 0.3
-				NONTERMINAL: PROG, Scope: 0.3
-					NONTERMINAL: CODE, Scope: 0.3
-						NONTERMINAL: INSTR, Scope: 0.3
-							NONTERMINAL: ASSIGN, Scope: 0.3
-								NONTERMINAL: VAR, Scope: 0.3
-									TERMINAL: lastproccall, Scope: 0.3, internalName: V4
-								NONTERMINAL: NUMEXPR, Scope: 0.3
-									TERMINAL: 100, Scope: 0.3

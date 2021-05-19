@@ -101,7 +101,7 @@ public class TreeCrawler {
     }
     public void procRename(){
         procRename(treeRoot, null, null);
-        treePrune();
+        treePrune(treeRoot);
     }
     private void procVarCrawl(SyntaxNode curr, Vector<String> names, int mode){
         //mode 0 means add varnames
@@ -223,60 +223,92 @@ public class TreeCrawler {
         return false;
     }
     private void procRename(SyntaxNode curr, SyntaxNode AncestorProg, SyntaxNode currProc){
-        if(curr == null){
-            return;
-        }else if(curr.getData("symbol").equals("PROG")){
-            for(SyntaxNode c: curr.getChildren()){
-                procRename(c, curr, currProc);
-            }
-        }else if(curr.getData("symbol").equals("PROC")){
-            for(SyntaxNode c: curr.getChildren()){
-                procRename(c, AncestorProg, curr);
-            }
-        }else if(curr.getData("symbol").equals("CALL")){
-            //check rules and rename matching func
-            String procname = curr.getChildren().elementAt(0).getData("symbol");
+        if(curr != null){
+            switch (curr.getData("symbol")) {
+                case "PROG":
+                    for (SyntaxNode c : curr.getChildren()) {
+                        procRename(c, curr, currProc);
+                    }
+                    break;
+                case "PROC":
+                    for (SyntaxNode c : curr.getChildren()) {
+                        procRename(c, AncestorProg, curr);
+                    }
+                    break;
+                case "CALL":
+                    //check rules and rename matching func
+                    String procname = curr.getChildren().elementAt(0).getData("symbol");
 
-            if(currProc!=null&&currProc.getChildren().elementAt(1).getData("symbol").equals(procname)){
-                //recursive call matched
+                    if (currProc != null && currProc.getChildren().elementAt(1).getData("symbol").equals(procname)) {
+                        //recursive call matched
 
-                if(currProc.getChildren().elementAt(1).getData("internalName")!= null){
-                    curr.getChildren().elementAt(0).addInternalName(currProc.getChildren().elementAt(1).getData("internalName"));
-                }
-            }else{
-                //check prog procs for match
-                SyntaxNode ProcNode = AncestorProg.getChildren().elementAt(1);
-                SyntaxNode calledProc = curr.getChildren().elementAt(0);
-                if(ProcNode!=null){
-                    for(SyntaxNode c: ProcNode.getChildren()){
-                        if(c.getData("symbol").equals("PROC")){
-                            SyntaxNode tempProc = c.getChildren().elementAt(1);
-                            if(tempProc.getData("symbol").equals(calledProc.getData("symbol"))){
-                                if (tempProc.getData("internalName") == null) {
-                                    tempProc.addInternalName("p" + nextProcName++);
+                        if (currProc.getChildren().elementAt(1).getData("internalName") != null) {
+                            curr.getChildren().elementAt(0).addInternalName(currProc.getChildren().elementAt(1).getData("internalName"));
+                        }
+                    } else {
+                        //check prog procs for match
+                        SyntaxNode ProcNode = AncestorProg.getChildren().elementAt(1);
+                        SyntaxNode calledProc = curr.getChildren().elementAt(0);
+                        if (ProcNode != null) {
+                            for (SyntaxNode c : ProcNode.getChildren()) {
+                                if (c.getData("symbol").equals("PROC")) {
+                                    SyntaxNode tempProc = c.getChildren().elementAt(1);
+                                    if (tempProc.getData("symbol").equals(calledProc.getData("symbol"))) {
+                                        if (tempProc.getData("internalName") == null) {
+                                            tempProc.addInternalName("p" + nextProcName++);
+                                        }
+                                        calledProc.addInternalName(tempProc.getData("internalName"));
+                                    }
                                 }
-                                calledProc.addInternalName(tempProc.getData("internalName"));
+                            }
+                            if (calledProc.getData("internalName") == null) {
+                                if (!treeRoot.error) {
+                                    treeRoot.error = true;
+                                    treeRoot.errMessage = "Illegal call to procedure: " + calledProc.getData("symbol");
+                                }
+                            }
+                        } else {
+                            if (!treeRoot.error) {
+                                treeRoot.error = true;
+                                treeRoot.errMessage = "Procedure without definition called";
                             }
                         }
                     }
-                }else{
-                    if(!treeRoot.error){
-                        treeRoot.error = true;
-                        treeRoot.errMessage = "Procedure without definition called";
+                    for (SyntaxNode c : curr.getChildren()) {
+                        procRename(c, AncestorProg, currProc);
                     }
-                }
-            }
-            for(SyntaxNode c: curr.getChildren()){
-                procRename(c, AncestorProg, currProc);
-            }
-        }else{
-            //recur for all children
-            for(SyntaxNode c: curr.getChildren()){
-                procRename(c, AncestorProg, currProc);
+                    break;
+                default:
+                    //recur for all children
+                    for (SyntaxNode c : curr.getChildren()) {
+                        procRename(c, AncestorProg, currProc);
+                    }
+                    break;
             }
         }
     }
-    private void treePrune(){
+    private void treePrune(SyntaxNode curr){
+        if(curr!=null) {
+            if (curr.getData("symbol").equals("PROC_DEFS")) {
+                //check children internal names
+                Vector<SyntaxNode> children = curr.getChildren();
+                for (int i = 0; i < children.size(); i++) {
+                    SyntaxNode terminal = children.elementAt(i).getChildren().get(1);
+                    if (terminal.getData("internalName") == null) {
+                        curr.getChildren().remove(i);
+                    }
+                }
+            }
 
+            for (SyntaxNode c : curr.getChildren()) {
+                treePrune(c);
+            }
+            if (curr.getData("symbol").equals("PROG")) {
+                if (curr.getChildren().size()>1&&curr.getChildren().elementAt(1) != null && curr.getChildren().elementAt(0).getChildren().isEmpty()) {
+                    curr.getChildren().remove(1);
+                }
+            }
+        }
     }
+
 }
