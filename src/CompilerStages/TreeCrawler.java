@@ -295,6 +295,8 @@ public class TreeCrawler {
                 for (int i = 0; i < children.size(); i++) {
                     SyntaxNode terminal = children.elementAt(i).getChildren().get(1);
                     if (terminal.getData("internalName") == null) {
+                        treeRoot.warn = true;
+                        treeRoot.warnMessage += "WARNING:Procedure " + terminal.getData("symbol") +" declared but never used\n";
                         curr.getChildren().remove(i);
                     }
                 }
@@ -304,7 +306,7 @@ public class TreeCrawler {
                 treePrune(c);
             }
             if (curr.getData("symbol").equals("PROG")) {
-                if (curr.getChildren().size()>1&&curr.getChildren().elementAt(1) != null && curr.getChildren().elementAt(0).getChildren().isEmpty()) {
+                if (curr.getChildren().size()>1&&curr.getChildren().elementAt(1) != null && curr.getChildren().elementAt(1).getChildren().isEmpty()) {
                     curr.getChildren().remove(1);
                 }
             }

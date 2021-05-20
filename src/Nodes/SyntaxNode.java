@@ -6,6 +6,8 @@ import java.util.Vector;
 public class SyntaxNode {
     public boolean error;
     public String errMessage;
+    public boolean warn;
+    public String warnMessage="";
 
     public Vector<SyntaxNode> getChildren() {
         return  children;
@@ -34,10 +36,12 @@ public class SyntaxNode {
     }
 
     public String toString(int i){
+        StringBuilder res = new StringBuilder();
         if(error){
             return errMessage;
+        }else if(warn){
+            res.append(warnMessage).append('\n');
         }
-        StringBuilder res = new StringBuilder();
         res.append("\t".repeat(Math.max(0, i)));
         int k = ++i;
         res.append(nodeType.name()).append(": ").append(data.get("symbol")).append(", Scope: ").append(data.get("scope"));

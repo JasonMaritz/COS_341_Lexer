@@ -1,3 +1,5 @@
+WARNING:Procedure calcc declared but never used
+
 NONTERMINAL: PROGPRIME, Scope: 0
 	NONTERMINAL: PROG, Scope: 0
 		NONTERMINAL: CODE, Scope: 0
