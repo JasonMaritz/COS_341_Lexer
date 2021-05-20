@@ -1,57 +1,35 @@
-WARNING:Procedure calcc declared but never used
-
 NONTERMINAL: PROGPRIME, Scope: 0
 	NONTERMINAL: PROG, Scope: 0
 		NONTERMINAL: CODE, Scope: 0
 			NONTERMINAL: INSTR, Scope: 0
-				NONTERMINAL: ASSIGN, Scope: 0
-					NONTERMINAL: VAR, Scope: 0
-						TERMINAL: variables, Scope: 0, internalName: V1
-					NONTERMINAL: NUMEXPR, Scope: 0
-						TERMINAL: 40, Scope: 0
-			NONTERMINAL: CODE, Scope: 0
-				NONTERMINAL: INSTR, Scope: 0
-					NONTERMINAL: ASSIGN, Scope: 0
-						NONTERMINAL: VAR, Scope: 0
-							TERMINAL: variables, Scope: 0, internalName: V1
-						NONTERMINAL: NUMEXPR, Scope: 0
-							TERMINAL: 50, Scope: 0
-				NONTERMINAL: CODE, Scope: 0
-					NONTERMINAL: INSTR, Scope: 0
-						NONTERMINAL: ASSIGN, Scope: 0
-							NONTERMINAL: VAR, Scope: 0
-								TERMINAL: vars, Scope: 0, internalName: V2
-							NONTERMINAL: NUMEXPR, Scope: 0
-								TERMINAL: -15, Scope: 0
-					NONTERMINAL: CODE, Scope: 0
-						NONTERMINAL: INSTR, Scope: 0
-							NONTERMINAL: CALL, Scope: 0
-								TERMINAL: calca, Scope: 0, internalName: p0
+				NONTERMINAL: CALL, Scope: 0
+					TERMINAL: a, Scope: 0, internalName: p0
 		NONTERMINAL: PROC_DEFS, Scope: 0
 			NONTERMINAL: PROC, Scope: 0.1
 				TERMINAL: proc, Scope: 0.1
-				TERMINAL: calca, Scope: 0.1, internalName: p0
+				TERMINAL: a, Scope: 0.1, internalName: p0
 				NONTERMINAL: PROG, Scope: 0.1
 					NONTERMINAL: CODE, Scope: 0.1
 						NONTERMINAL: INSTR, Scope: 0.1
-							NONTERMINAL: ASSIGN, Scope: 0.1
-								NONTERMINAL: VAR, Scope: 0.1
-									TERMINAL: thisvar, Scope: 0.1, internalName: V3
-								NONTERMINAL: NUMEXPR, Scope: 0.1
-									TERMINAL: 20, Scope: 0.1
-						NONTERMINAL: CODE, Scope: 0.1
-							NONTERMINAL: INSTR, Scope: 0.1
-								NONTERMINAL: CALL, Scope: 0.1
-									TERMINAL: calca, Scope: 0.1, internalName: p0
-							NONTERMINAL: CODE, Scope: 0.1
-								NONTERMINAL: INSTR, Scope: 0.1
-									NONTERMINAL: CALL, Scope: 0.1
-										TERMINAL: calcb, Scope: 0.1, internalName: p1
+							NONTERMINAL: CALL, Scope: 0.1
+								TERMINAL: b, Scope: 0.1, internalName: p1
 					NONTERMINAL: PROC_DEFS, Scope: 0.1
 						NONTERMINAL: PROC, Scope: 0.1.2
 							TERMINAL: proc, Scope: 0.1.2
-							TERMINAL: calcb, Scope: 0.1.2, internalName: p1
+							TERMINAL: b, Scope: 0.1.2, internalName: p1
 							NONTERMINAL: PROG, Scope: 0.1.2
 								NONTERMINAL: CODE, Scope: 0.1.2
 									NONTERMINAL: INSTR, Scope: 0.1.2
-										TERMINAL: halt, Scope: 0.1.2
+										NONTERMINAL: CALL, Scope: 0.1.2
+											TERMINAL: c, Scope: 0.1.2, internalName: p2
+								NONTERMINAL: PROC_DEFS, Scope: 0.1.2
+									NONTERMINAL: PROC, Scope: 0.1.2.3
+										TERMINAL: proc, Scope: 0.1.2.3
+										TERMINAL: c, Scope: 0.1.2.3, internalName: p2
+										NONTERMINAL: PROG, Scope: 0.1.2.3
+											NONTERMINAL: CODE, Scope: 0.1.2.3
+												NONTERMINAL: INSTR, Scope: 0.1.2.3
+													NONTERMINAL: IO, Scope: 0.1.2.3
+														TERMINAL: output, Scope: 0.1.2.3
+														NONTERMINAL: VAR, Scope: 0.1.2.3
+															TERMINAL: e, Scope: 0.1.2.3, internalName: V1

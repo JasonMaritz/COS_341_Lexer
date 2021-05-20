@@ -1,15 +1,10 @@
-variables = 40;
-variables= 50;
-vars = -15;
-calca;
-proc calca{
-    thisvar = 20;
-    calca;
-    calcb;
-    proc calcb{
-        halt;
+a;
+proc a{
+    b;
+    proc b{
+        c;
+        proc c{
+            output(e)
+        }
     }
-}
-proc calcc{
-    lastproccall = 100
 }

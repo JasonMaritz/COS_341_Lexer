@@ -247,30 +247,35 @@ public class TreeCrawler {
                         }
                     } else {
                         //check prog procs for match
-                        SyntaxNode ProcNode = AncestorProg.getChildren().elementAt(1);
-                        SyntaxNode calledProc = curr.getChildren().elementAt(0);
-                        if (ProcNode != null) {
-                            for (SyntaxNode c : ProcNode.getChildren()) {
-                                if (c.getData("symbol").equals("PROC")) {
-                                    SyntaxNode tempProc = c.getChildren().elementAt(1);
-                                    if (tempProc.getData("symbol").equals(calledProc.getData("symbol"))) {
-                                        if (tempProc.getData("internalName") == null) {
-                                            tempProc.addInternalName("p" + nextProcName++);
+                        if (!(AncestorProg.getChildren().size() > 1)){
+                            treeRoot.error = true;
+                            treeRoot.errMessage = "Invalid call to procedure";
+                        } else {
+                            SyntaxNode ProcNode = AncestorProg.getChildren().elementAt(1);
+                            SyntaxNode calledProc = curr.getChildren().elementAt(0);
+                            if (ProcNode != null) {
+                                for (SyntaxNode c : ProcNode.getChildren()) {
+                                    if (c.getData("symbol").equals("PROC")) {
+                                        SyntaxNode tempProc = c.getChildren().elementAt(1);
+                                        if (tempProc.getData("symbol").equals(calledProc.getData("symbol"))) {
+                                            if (tempProc.getData("internalName") == null) {
+                                                tempProc.addInternalName("p" + nextProcName++);
+                                            }
+                                            calledProc.addInternalName(tempProc.getData("internalName"));
                                         }
-                                        calledProc.addInternalName(tempProc.getData("internalName"));
                                     }
                                 }
-                            }
-                            if (calledProc.getData("internalName") == null) {
+                                if (calledProc.getData("internalName") == null) {
+                                    if (!treeRoot.error) {
+                                        treeRoot.error = true;
+                                        treeRoot.errMessage = "Illegal call to procedure: " + calledProc.getData("symbol");
+                                    }
+                                }
+                            } else {
                                 if (!treeRoot.error) {
                                     treeRoot.error = true;
-                                    treeRoot.errMessage = "Illegal call to procedure: " + calledProc.getData("symbol");
+                                    treeRoot.errMessage = "Procedure without definition called";
                                 }
-                            }
-                        } else {
-                            if (!treeRoot.error) {
-                                treeRoot.error = true;
-                                treeRoot.errMessage = "Procedure without definition called";
                             }
                         }
                     }
