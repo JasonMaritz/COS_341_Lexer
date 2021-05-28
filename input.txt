@@ -2,7 +2,6 @@ a;
 proc a{
     b;
     proc b{
-        c;
         proc c{
             output(e)
         }

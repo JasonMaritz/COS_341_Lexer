@@ -1,5 +1,6 @@
 package CompilerStages;
 
+import Nodes.SymbolTable;
 import Nodes.SyntaxNode;
 
 import java.util.Vector;
@@ -7,6 +8,7 @@ import java.util.Vector;
 public class TreeCrawler {
     SyntaxNode treeRoot;
     Vector<String> usedScopes;
+    SymbolTable table = new SymbolTable();
     int nextScope=1;
     int nextVarName = 1;
     int nextProcName = 0;
@@ -317,5 +319,4 @@ public class TreeCrawler {
             }
         }
     }
-
 }
