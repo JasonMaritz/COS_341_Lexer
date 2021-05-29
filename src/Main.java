@@ -39,6 +39,8 @@ public class Main {
             //-------------------ForLoopChecking AND ProcRenaming--------------------------------------------------------
             scoper.loopCrawl();
             scoper.procRename();
+            //-------------------Type Inference-------------------------------------------------------------------------
+            scoper.typeCrawl();
             //----------------------------------------------------------------------------------------------------------
             output = parser.getOutput().toString(0);
             writer.append(output);

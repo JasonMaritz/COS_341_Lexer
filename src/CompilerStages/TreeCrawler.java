@@ -105,6 +105,16 @@ public class TreeCrawler {
         procRename(treeRoot, null, null);
         treePrune(treeRoot);
     }
+    public void typeCrawl(){
+        populateSymbolTable(treeRoot);
+        typeCrawl(treeRoot);
+    }
+    private void populateSymbolTable(SyntaxNode curr){
+
+    }
+    private void typeCrawl(SyntaxNode curr){
+
+    }
     private void procVarCrawl(SyntaxNode curr, Vector<String> names, int mode){
         //mode 0 means add varnames
         //mode 1 means check proc names
