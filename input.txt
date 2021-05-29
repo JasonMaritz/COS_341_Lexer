@@ -1,5 +1,9 @@
-a;
-proc a{
+as;
+this = 10;
+is = 20;
+a = 30;
+variable = 40;
+proc as{
     b;
     proc b{
         proc c{

@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         String output;
 
-        //-------------------LEXER CALL-------------------------------------------------------
+        //-------------------LEXER CALL---------------------------------------------------------------------------------
         try {
             File inputFile = new File(args[0]);
             if(!inputFile.exists()) {
@@ -36,7 +36,7 @@ public class Main {
             //-------------------NameChecking---------------------------------------------------------------------------
             scoper.procRules();
             scoper.varCrawl();
-            //-------------------ForLoopChecking AND ProcRenaming--------------------------------------------------------
+            //-------------------ForLoopChecking AND ProcRenaming-------------------------------------------------------
             scoper.loopCrawl();
             scoper.procRename();
             //-------------------Type Inference-------------------------------------------------------------------------

@@ -3,12 +3,13 @@ package CompilerStages;
 import Nodes.SymbolTable;
 import Nodes.SyntaxNode;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 public class TreeCrawler {
     SyntaxNode treeRoot;
     Vector<String> usedScopes;
-    SymbolTable table = new SymbolTable();
+    SymbolTable symTable = new SymbolTable();
     int nextScope=1;
     int nextVarName = 1;
     int nextProcName = 0;
@@ -107,13 +108,45 @@ public class TreeCrawler {
     }
     public void typeCrawl(){
         populateSymbolTable(treeRoot);
+        initTypes(treeRoot);
         typeCrawl(treeRoot);
     }
     private void populateSymbolTable(SyntaxNode curr){
-
+        if(curr == null){
+            return;
+        }
+        if(curr.getNodeType().equals(SyntaxNode.type.TERMINAL)){
+            String intName = curr.getData("internalName");
+            if(intName!=null){
+                HashMap<String, HashMap<String, String>> tab = symTable.getTable();
+                HashMap<String, String> row = tab.get(intName);
+                if(row!=null){
+                    row.put("internalName", intName);
+                    row.put("scope", curr.getData("scope"));
+                    row.put("type", "u");
+                }else{
+                    tab.put(intName, new HashMap<>());
+                    row = tab.get(intName);
+                    row.put("internalName", intName);
+                    row.put("scope", curr.getData("scope"));
+                    row.put("type", "u");
+                }
+            }
+        }
+        for(SyntaxNode c: curr.getChildren()){
+            populateSymbolTable(c);
+        }
     }
     private void typeCrawl(SyntaxNode curr){
 
+    }
+    private void initTypes(SyntaxNode curr){
+        if(curr != null){
+            curr.addType("u");
+            for(SyntaxNode c: curr.getChildren()){
+                initTypes(c);
+            }
+        }
     }
     private void procVarCrawl(SyntaxNode curr, Vector<String> names, int mode){
         //mode 0 means add varnames

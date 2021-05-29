@@ -27,6 +27,7 @@ public class SyntaxNode {
     public SyntaxNode(type ntype, String symbol){
         data = new HashMap<>();
         data.put("symbol", symbol);
+        data.put("type", "u");
         nodeType = ntype;
         children = new Vector<>();
     }
@@ -62,4 +63,5 @@ public class SyntaxNode {
         data.put("scope", s);
     }
     public void addInternalName(String s){ data.put("internalName", s); }
+    public void addType(String s){data.put("type", s);}
 }
