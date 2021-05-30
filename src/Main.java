@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        String output;
+        String output = "";
 
         //-------------------LEXER CALL---------------------------------------------------------------------------------
         try {
@@ -41,6 +41,13 @@ public class Main {
             scoper.procRename();
             //-------------------Type Inference-------------------------------------------------------------------------
             scoper.typeCrawl();
+            boolean error = scoper.errorOut();
+            if(error){
+                output = parser.getOutput().toString(0);
+                writer.append(output);
+                writer.close();
+                return;
+            }
             //----------------------------------------------------------------------------------------------------------
             output = parser.getOutput().toString(0);
             writer.append(output);

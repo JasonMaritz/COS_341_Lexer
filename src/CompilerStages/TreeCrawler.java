@@ -112,6 +112,30 @@ public class TreeCrawler {
         initTypes(treeRoot);
         typeCrawl(treeRoot);
     }
+    public boolean errorOut(){
+        if(!treeRoot.error)
+            treeRoot.errMessage = "";
+        boolean ret = errorOut(treeRoot);
+        treeRoot.error = ret;
+        return ret;
+    }
+    private boolean errorOut(SyntaxNode curr){
+        if(curr == null)
+            return false;
+        if(curr.getNodeType().name().equals(SyntaxNode.type.TERMINAL.name()))
+            return false;
+        boolean ret = false;
+        if(curr.getData("type").equals("u")||curr.getData("type").equals("e")){
+            ret = true;
+            treeRoot.error = true;
+            treeRoot.errMessage = "Type error detected!";
+        }
+        for(SyntaxNode c: curr.getChildren()){
+            boolean ret1 = errorOut(c);
+            ret = ret || ret1;
+        }
+        return ret;
+    }
     private void populateSymbolTable(SyntaxNode curr){
         if(curr == null){
             return;
@@ -144,7 +168,7 @@ public class TreeCrawler {
         if(curr.getNodeType().name().equals(SyntaxNode.type.TERMINAL.name()))
             return;
         int production = identifyProd(curr);
-        switch (production){
+        switch (production) {
             case 1:
             case 2:
             case 4:
@@ -154,156 +178,260 @@ public class TreeCrawler {
             case 13:
             case 12:
             case 14:
+                //<editor-fold desc="single Line Prods">
                 SyntaxNode c = curr.getChildren().get(0);
-                typeCrawl(c);
-                if(c.getData("type").equals("c"))
+                if (c.getData("type").equals("c"))
                     curr.addType("c");
+                else {
+                    typeCrawl(c);
+                    if (c.getData("type").equals("c"))
+                        curr.addType("c");
+                }
                 break;
+            //</editor-fold>
             case 3:
             case 5:
             case 8:
+                //<editor-fold desc="two prod productions">
                 SyntaxNode c1, c2;
                 c1 = curr.getChildren().get(0);
                 c2 = curr.getChildren().get(1);
-                typeCrawl(c1);
-                typeCrawl(c2);
-                if(c1.getData("type").equals("c")&&c1.getData("type").equals("c"))
+                if (c1.getData("type").equals("c") && c2.getData("type").equals("c"))
                     curr.addType("c");
+                else {
+                    typeCrawl(c1);
+                    typeCrawl(c2);
+                    if (c2 != null) {
+                        if (c1.getData("type").equals("c") && c2.getData("type").equals("c"))
+                            curr.addType("c");
+                    } else {
+                        if (c1.getData("type").equals("c"))
+                            curr.addType("c");
+                    }
+                }
                 break;
+            //</editor-fold>
             case 6:
+                //<editor-fold desc="proc">
                 SyntaxNode prog = curr.getChildren().get(2);
-                typeCrawl(prog);
-                if(prog.getData("type").equals("c"))
+                if (prog.getData("type").equals("c"))
                     curr.addType("c");
+                else {
+                    typeCrawl(prog);
+                    if (prog.getData("type").equals("c"))
+                        curr.addType("c");
+                }
                 break;
+            //</editor-fold>
             case 9:
             case 17:
+                //<editor-fold desc="halt">
                 curr.addType("c");
                 break;
+            //</editor-fold>
             case 15:
+                //<editor-fold desc="input">
                 SyntaxNode inputVar = curr.getChildren().get(1);
-                typeCrawl(inputVar);
-                if(inputVar.getData("type").equals("s"))
+                String inputVarT = symTable.getTable().get(inputVar.getChildren().get(0).getData("internalName")).get("type");
+                if (inputVarT.equals("s"))
                     curr.addType("e");
-                else{
+                else {
                     curr.addType("c");
                     inputVar.addType("n");
+                    symTable.getTable().get(inputVar.getChildren().get(0).getData("internalName")).put("type", "n");
                 }
                 break;
+            //</editor-fold>
             case 16:
+                //<editor-fold desc="output">
                 SyntaxNode outputVar = curr.getChildren().get(1);
-                typeCrawl(outputVar);
-                if(outputVar.getData("type").equals("s"))
+                String outputVarT = symTable.getTable().get(outputVar.getChildren().get(0).getData("internalName")).get("type");
+                if (outputVarT.equals("s"))
                     curr.addType("c");
-                else if(outputVar.getData("type").equals("n")){
+                else if (outputVarT.equals("n")) {
                     curr.addType("c");
-                }else{
+                } else {
                     outputVar.addType("o");
+                    symTable.getTable().get(outputVar.getChildren().get(0).getData("internalName")).put("type", "o");
                     curr.addType("c");
                 }
                 break;
+            //</editor-fold>
             case 18:
-                if(curr.getData("type").equals("u"))
+                //<editor-fold desc="Var name">
+                String varNameT = symTable.getTable().get(curr.getChildren().get(0).getData("internalName")).get("type");
+                if (varNameT.equals("u")) {
                     curr.addType("o");
+                    symTable.getTable().get(curr.getChildren().get(0).getData("internalName")).put("type", "o");
+                }else{
+                    curr.addType(varNameT);
+                }
                 break;
+            //</editor-fold>
             case 19:
-                typeCrawl(curr.getChildren().get(0));
-                if(curr.getChildren().get(0).getData("type").equals("n"))
+                //<editor-fold desc="var = string">
+                String aVarST = symTable.getTable().get(curr.getChildren().get(0).getChildren().get(0).getData("internalName")).get("type");
+                if (aVarST.equals("n"))
                     curr.addType("e");
-                else{
+                else {
                     curr.addType("c");
                     curr.getChildren().get(0).addType("s");
+                    symTable.getTable().get(curr.getChildren().get(0).getChildren().get(0).getData("internalName")).put("type", "s");
                 }
                 break;
+            //</editor-fold>
             case 20:
+                //<editor-fold desc="var = var">
                 //VAR=VAR
                 SyntaxNode aVar1, aVar2;
+                String aVar1T, aVar2T;
                 aVar1 = curr.getChildren().get(0);
                 aVar2 = curr.getChildren().get(1);
-                typeCrawl(aVar1);
-                typeCrawl(aVar2);
-                if((aVar1.getData("type").equals("n")&&aVar2.getData("type").equals("s"))||(aVar2.getData("type").equals("n")&&aVar1.getData("type").equals("s")))
+                //get Var types from ST
+                aVar1T = symTable.getTable().get(aVar1.getChildren().get(0).getData("internalName")).get("type");
+                aVar2T = symTable.getTable().get(aVar2.getChildren().get(0).getData("internalName")).get("type");
+                if ((aVar1T.equals("n") && aVar2T.equals("s")) || (aVar2T.equals("n") && aVar1T.equals("s")))
                     curr.addType("e");
-                else if((aVar1.getData("type").equals("n")&&!aVar2.getData("type").equals("s"))||(aVar2.getData("type").equals("n")&&!aVar1.getData("type").equals("s")))
+                else if ((aVar1T.equals("n") && !aVar2T.equals("s")) || (aVar2T.equals("n") && !aVar1T.equals("s"))) {
                     curr.addType("c");//assign vars to n
-                else if((!aVar1.getData("type").equals("n")&&aVar2.getData("type").equals("s"))||(!aVar2.getData("type").equals("n")&&aVar1.getData("type").equals("s")))
+                    symTable.getTable().get(aVar1.getChildren().get(0).getData("internalName")).put("type", "n");
+                    symTable.getTable().get(aVar1.getChildren().get(0).getData("internalName")).put("type", "n");
+                } else if ((!aVar1T.equals("n") && aVar2T.equals("s")) || (!aVar2T.equals("n") && aVar1T.equals("s"))) {
                     curr.addType("c");//assign vars to s
-                else{
+                    symTable.getTable().get(aVar1.getChildren().get(0).getData("internalName")).put("type", "s");
+                    symTable.getTable().get(aVar1.getChildren().get(0).getData("internalName")).put("type", "s");
+                } else {
                     curr.addType("c");//assign vars to o
+                    symTable.getTable().get(aVar1.getChildren().get(0).getData("internalName")).put("type", "o");
+                    symTable.getTable().get(aVar1.getChildren().get(0).getData("internalName")).put("type", "o");
                 }
                 break;
+            //</editor-fold>
             case 21:
+                //<editor-fold desc="var = numexpr">
                 SyntaxNode nVar1, nNum1;
+                String nVar1T;
                 nVar1 = curr.getChildren().get(0);
                 nNum1 = curr.getChildren().get(1);
-                typeCrawl(nVar1);
-                typeCrawl(nNum1);
-                if(nVar1.getData("type").equals("s"))
+                nVar1T = symTable.getTable().get(nVar1.getChildren().get(0).getData("internalName")).get("type");
+                if (nVar1T.equals("s"))
                     curr.addType("e");
-                if(!(nVar1.getData("type").equals("s"))&&nNum1.getData("type").equals("n")) {
+                if (!(nVar1T.equals("s")) && nNum1.getData("type").equals("n")) {
                     nVar1.addType("n");
+                    symTable.getTable().get(nVar1.getChildren().get(0).getData("internalName")).put("type", "n");
                     curr.addType("c");
-                }else{
-                    //set var to n then recrawl
+                } else {
+                    nVar1.addType("n");
+                    symTable.getTable().get(nVar1.getChildren().get(0).getData("internalName")).put("type", "n");
+                    nVar1 = curr.getChildren().get(0);
+                    nNum1 = curr.getChildren().get(1);
+                    typeCrawl(nNum1);
+                    if (nVar1T.equals("s"))
+                        curr.addType("e");
+                    if (!(nVar1T.equals("s")) && nNum1.getData("type").equals("n")) {
+                        nVar1.addType("n");
+                        symTable.getTable().get(nVar1.getChildren().get(0).getData("internalName")).put("type", "n");
+                        curr.addType("c");
+                    }
                 }
                 break;
+            //</editor-fold>
             case 22:
-                typeCrawl(curr.getChildren().get(0));
-                if(curr.getChildren().get(0).getData("type").equals("s"))
+                //<editor-fold desc="numexpr var">
+                String numVarT = symTable.getTable().get(curr.getChildren().get(0).getChildren().get(0).getData("internalName")).get("type");
+                if (numVarT.equals("s"))
                     curr.addType("e");
-                curr.addType("n");
-                break;
-            case 23:
-                curr.addType("n");
-                break;
-            case 24:
-                SyntaxNode Calc = curr.getChildren().get(0);
-                typeCrawl(Calc);
-                if(Calc.getData("type").equals("n"))
+                else {
                     curr.addType("n");
+                    symTable.getTable().get(curr.getChildren().get(0).getChildren().get(0).getData("internalName")).put("type", "n");
+                }
                 break;
+            //</editor-fold>
+            case 23:
+                //<editor-fold desc="numexpr = num">
+                curr.addType("n");
+                break;
+            //</editor-fold>
+            case 24:
+                //<editor-fold desc="NUM CALC">
+                SyntaxNode Calc = curr.getChildren().get(0);
+                if (Calc.getData("type").equals("n"))
+                    curr.addType("n");
+                else {
+                    typeCrawl(Calc);
+                    if (Calc.getData("type").equals("n"))
+                        curr.addType("n");
+                }
+                break;
+            //</editor-fold>
             case 25:
             case 27:
             case 26:
+                //<editor-fold desc="calcs">
                 SyntaxNode num1, num2;
                 num1 = curr.getChildren().get(1);
                 num2 = curr.getChildren().get(2);
-                typeCrawl(num1);
-                typeCrawl(num2);
-                if(num1.getData("type").equals("n")&&num2.getData("type").equals("n"))
+                if (num1.getData("type").equals("n") && num2.getData("type").equals("n"))
                     curr.addType("n");
+                else {
+                    typeCrawl(num1);
+                    typeCrawl(num2);
+                    if (num1.getData("type").equals("n") && num2.getData("type").equals("n"))
+                        curr.addType("n");
+                }
                 break;
+            //</editor-fold>
             case 28:
+                //<editor-fold desc="if then">
                 SyntaxNode bool, code1;
                 bool = curr.getChildren().get(1);
                 code1 = curr.getChildren().get(3);
-                typeCrawl(bool);
-                typeCrawl(code1);
-                if((bool.getData("type").equals("b")||bool.getData("type").equals("f"))&&code1.getData("type").equals("c"))
+                if ((bool.getData("type").equals("b") || bool.getData("type").equals("f")) && code1.getData("type").equals("c"))
                     curr.addType("c");
+                else {
+                    typeCrawl(bool);
+                    typeCrawl(code1);
+                    if ((bool.getData("type").equals("b") || bool.getData("type").equals("f")) && code1.getData("type").equals("c"))
+                        curr.addType("c");
+                }
                 break;
+            //</editor-fold>
             case 29:
+                //<editor-fold desc="if then else">
                 SyntaxNode bool2, code21, code22;
                 bool2 = curr.getChildren().get(1);
                 code21 = curr.getChildren().get(3);
                 code22 = curr.getChildren().get(5);
-                typeCrawl(bool2);
-                typeCrawl(code21);
-                typeCrawl(code22);
-                if((bool2.getData("type").equals("b")||bool2.getData("type").equals("f"))&&code21.getData("type").equals("c")&&code22.getData("type").equals("c"))
+                if ((bool2.getData("type").equals("b") || bool2.getData("type").equals("f")) && code21.getData("type").equals("c") && code22.getData("type").equals("c"))
                     curr.addType("c");
+                else {
+                    typeCrawl(bool2);
+                    typeCrawl(code21);
+                    typeCrawl(code22);
+                    if ((bool2.getData("type").equals("b") || bool2.getData("type").equals("f")) && code21.getData("type").equals("c") && code22.getData("type").equals("c"))
+                        curr.addType("c");
+                }
                 break;
+            //</editor-fold>
             case 30:
+                //<editor-fold desc="while">
                 SyntaxNode wBool, wCode;
                 wBool = curr.getChildren().get(1);
                 wCode = curr.getChildren().get(2);
-                typeCrawl(wBool);
-                typeCrawl(wCode);
-                if((wBool.getData("type").equals("b")||wBool.getData("type").equals("f"))&&wCode.getData("type").equals("c"))
+                if ((wBool.getData("type").equals("b") || wBool.getData("type").equals("f")) && wCode.getData("type").equals("c"))
                     curr.addType("c");
+                else {
+                    typeCrawl(wBool);
+                    typeCrawl(wCode);
+                    if ((wBool.getData("type").equals("b") || wBool.getData("type").equals("f")) && wCode.getData("type").equals("c"))
+                        curr.addType("c");
+                }
                 break;
+            //</editor-fold>
             case 31:
+                //<editor-fold desc="for loop">
                 SyntaxNode fVar1, fVar2, fVar3, fVar4, fVar5, fCode;
+                String fVar1T, fVar2T, fVar3T, fVar4T, fVar5T;
                 fVar1 = curr.getChildren().get(1);
                 fVar2 = curr.getChildren().get(2);
                 fVar3 = curr.getChildren().get(3);
@@ -315,90 +443,168 @@ public class TreeCrawler {
                 typeCrawl(fVar3);
                 typeCrawl(fVar4);
                 typeCrawl(fVar5);
-                typeCrawl(fCode);
-                if(fVar1.getData("type").equals("s")||fVar2.getData("type").equals("s")||
-                        fVar3.getData("type").equals("s")||fVar4.getData("type").equals("s")||
-                        fVar5.getData("type").equals("s")) {
+                //get var types from ST
+                fVar1T = symTable.getTable().get(fVar1.getChildren().get(0).getData("internalName")).get("type");
+                fVar2T = symTable.getTable().get(fVar2.getChildren().get(0).getData("internalName")).get("type");
+                fVar3T = symTable.getTable().get(fVar3.getChildren().get(0).getData("internalName")).get("type");
+                fVar4T = symTable.getTable().get(fVar4.getChildren().get(0).getData("internalName")).get("type");
+                fVar5T = symTable.getTable().get(fVar5.getChildren().get(0).getData("internalName")).get("type");
+                if (fVar1T.equals("s") || fVar2T.equals("s") ||
+                        fVar3T.equals("s") || fVar4T.equals("s") ||
+                        fVar5T.equals("s")) {
                     curr.addType("e");
-                }else if(fCode.getData("type").equals("c")){
+                } else if (fCode.getData("type").equals("c")) {
                     curr.addType("c");
                     fVar1.addType("n");
                     fVar2.addType("n");
                     fVar3.addType("n");
                     fVar4.addType("n");
                     fVar5.addType("n");
+                    symTable.getTable().get(fVar1.getChildren().get(0).getData("internalName")).put("type", "n");
+                    symTable.getTable().get(fVar2.getChildren().get(0).getData("internalName")).put("type", "n");
+                    symTable.getTable().get(fVar3.getChildren().get(0).getData("internalName")).put("type", "n");
+                    symTable.getTable().get(fVar4.getChildren().get(0).getData("internalName")).put("type", "n");
+                    symTable.getTable().get(fVar5.getChildren().get(0).getData("internalName")).put("type", "n");
+                } else {
+                    typeCrawl(fCode);
+                    if (fVar1T.equals("s") || fVar2T.equals("s") ||
+                            fVar3T.equals("s") || fVar4T.equals("s") ||
+                            fVar5T.equals("s")) {
+                        curr.addType("e");
+                    } else if (fCode.getData("type").equals("c")) {
+                        curr.addType("c");
+                        fVar1.addType("n");
+                        fVar2.addType("n");
+                        fVar3.addType("n");
+                        fVar4.addType("n");
+                        fVar5.addType("n");
+                        symTable.getTable().get(fVar1.getChildren().get(0).getData("internalName")).put("type", "n");
+                        symTable.getTable().get(fVar2.getChildren().get(0).getData("internalName")).put("type", "n");
+                        symTable.getTable().get(fVar3.getChildren().get(0).getData("internalName")).put("type", "n");
+                        symTable.getTable().get(fVar4.getChildren().get(0).getData("internalName")).put("type", "n");
+                        symTable.getTable().get(fVar5.getChildren().get(0).getData("internalName")).put("type", "n");
+                    }
                 }
                 break;
+            //</editor-fold>
             case 32://eq(var,var)
+                //<editor-fold desc="eq var var">
                 SyntaxNode eVar1, eVar2;
-                eVar1 = curr.getChildren().get(0);
-                eVar2 = curr.getChildren().get(1);
-                typeCrawl(eVar1);
-                typeCrawl(eVar2);
-                if((eVar1.getData("type").equals("n")&&eVar2.getData("type").equals("s"))||(eVar2.getData("type").equals("n")&&eVar1.getData("type").equals("s")))
+                String eVar1T, eVar2T;
+                eVar1 = curr.getChildren().get(1);
+                eVar2 = curr.getChildren().get(2);
+                //get types from ST
+                eVar1T = symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).get("type");
+                eVar2T = symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).get("type");
+                if ((eVar1T.equals("n") && eVar2T.equals("s")) || (eVar2T.equals("n") && eVar1T.equals("s"))){
                     curr.addType("f");
-                else if((eVar1.getData("type").equals("n")&&!eVar2.getData("type").equals("s"))||(eVar2.getData("type").equals("n")&&!eVar1.getData("type").equals("s")))
+                    typeCrawl(eVar1);
+                    typeCrawl(eVar2);
+                }else if ((eVar1T.equals("n") && !eVar2T.equals("s")) || (eVar2T.equals("n") && !eVar1T.equals("s"))){
                     curr.addType("b");//assign vars to n
-                else if((!eVar1.getData("type").equals("n")&&eVar2.getData("type").equals("s"))||(!eVar2.getData("type").equals("n")&&eVar1.getData("type").equals("s")))
+                    symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).put("type", "n");
+                    symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).put("type", "n");
+                    typeCrawl(eVar1);
+                    typeCrawl(eVar2);
+                }else if((!eVar1T.equals("n")&&eVar2T.equals("s"))||(!eVar2T.equals("n")&&eVar1T.equals("s"))) {
                     curr.addType("b");//assign vars to s
-                else{
+                    symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).put("type", "s");
+                    symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).put("type", "s");
+                    typeCrawl(eVar1);
+                    typeCrawl(eVar2);
+            }   else{
                     curr.addType("b");//assign vars to o
+                    symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).put("type", "o");
+                    symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).put("type", "o");
+                    typeCrawl(eVar1);
+                    typeCrawl(eVar2);
                 }
                 break;
+                //</editor-fold>
             case 33:
+                //<editor-fold desc="eq BOOL">
                 SyntaxNode bBool1, bBool2;
                 bBool1 = curr.getChildren().get(1);
                 bBool2 = curr.getChildren().get(2);
-                typeCrawl(bBool1);
-                typeCrawl(bBool2);
                 if((bBool1.getData("type").equals("b")||bBool1.getData("type").equals("f"))&&(bBool2.getData("type").equals("b")||bBool2.getData("type").equals("f")))
                     curr.addType("b");
+                else{
+                    typeCrawl(bBool1);
+                    typeCrawl(bBool2);
+                    if((bBool1.getData("type").equals("b")||bBool1.getData("type").equals("f"))&&(bBool2.getData("type").equals("b")||bBool2.getData("type").equals("f")))
+                        curr.addType("b");
+                }
                 break;
+                //</editor-fold>
             case 34:
+                //<editor-fold desc="eq NUMS">
                 SyntaxNode bNum1, bNum2;
                 bNum1 = curr.getChildren().get(1);
                 bNum2 = curr.getChildren().get(2);
-                typeCrawl(bNum1);
-                typeCrawl(bNum2);
                 if((bNum1.getData("type").equals("n"))&&(bNum2.getData("type").equals("n")))
                     curr.addType("b");
+                else {
+                    typeCrawl(bNum1);
+                    typeCrawl(bNum2);
+                    if((bNum1.getData("type").equals("n"))&&(bNum2.getData("type").equals("n")))
+                        curr.addType("b");
+                }
                 break;
+            //</editor-fold>
             case 35:
             case 36:
+                //<editor-fold desc="Var comp">
                 SyntaxNode bVar1, bVar2;
+                String bVar1T, bVar2T;
                 bVar1 = curr.getChildren().get(0);
                 bVar2 = curr.getChildren().get(2);
-                typeCrawl(bVar1);
-                typeCrawl(bVar2);
-                if(bVar1.getData("type").equals("s")||bVar2.getData("type").equals("s")){
+                bVar1T = symTable.getTable().get(bVar1.getChildren().get(0).getData("internalName")).get("type");
+                bVar2T = symTable.getTable().get(bVar2.getChildren().get(0).getData("internalName")).get("type");
+                if(bVar1T.equals("s")||bVar2T.equals("s")){
                     curr.addType("e");
                 }else{
+                    symTable.getTable().get(bVar1.getChildren().get(0).getData("internalName")).put("type", "n");
+                    symTable.getTable().get(bVar2.getChildren().get(0).getData("internalName")).put("type", "n");
                     bVar1.addType("n");
                     bVar2.addType("n");
                     curr.addType("b");
                 }
                 break;
+                //</editor-fold>
             case 37:
+                //<editor-fold desc="not">
                 SyntaxNode nBool = curr.getChildren().get(1);
-                typeCrawl(nBool);
-                if(nBool.getData("type").equals("b")||nBool.getData("type").equals("f"))
-                    nBool.addType("b");
+                if(nBool.getData("type").equals("b")||nBool.getData("type").equals("f")) {
+                    curr.addType("b");
+                }
+                else {
+                    typeCrawl(nBool);
+                    if(nBool.getData("type").equals("b")||nBool.getData("type").equals("f")) {
+                        curr.addType("b");
+                    }
+                }
                 break;
+                //</editor-fold>
             case 38:
+                //<editor-fold desc="or">
                 SyntaxNode oBool1, oBool2;
                 oBool1 = curr.getChildren().get(1);
                 oBool2 = curr.getChildren().get(2);
-                typeCrawl(oBool1);
-                typeCrawl(oBool2);
                 if((oBool1.getData("type").equals("b")||oBool1.getData("type").equals("f"))&&(oBool2.getData("type").equals("b")||oBool2.getData("type").equals("f")))
                     curr.addType("b");
+                else{
+                    typeCrawl(oBool1);
+                    typeCrawl(oBool2);
+                    if((oBool1.getData("type").equals("b")||oBool1.getData("type").equals("f"))&&(oBool2.getData("type").equals("b")||oBool2.getData("type").equals("f")))
+                        curr.addType("b");
+                }
                 break;
+                //</editor-fold>
             case 39:
+                //<editor-fold desc="and">
                 SyntaxNode aBool1, aBool2;
                 aBool1 = curr.getChildren().get(1);
                 aBool2 = curr.getChildren().get(2);
-                typeCrawl(aBool1);
-                typeCrawl(aBool2);
                 if(aBool1.getData("type").equals("f")&&aBool2.getData("type").equals("b")){
                     curr.addType("f");
                 }else if(aBool1.getData("type").equals("b")&&aBool2.getData("type").equals("f")){
@@ -407,8 +613,21 @@ public class TreeCrawler {
                     curr.addType("f");
                 }else if(aBool1.getData("type").equals("b")&&aBool2.getData("type").equals("b")){
                     curr.addType("b");
+                }else{
+                    typeCrawl(aBool1);
+                    typeCrawl(aBool2);
+                    if(aBool1.getData("type").equals("f")&&aBool2.getData("type").equals("b")){
+                        curr.addType("f");
+                    }else if(aBool1.getData("type").equals("b")&&aBool2.getData("type").equals("f")){
+                        curr.addType("f");
+                    }else if(aBool1.getData("type").equals("f")&&aBool2.getData("type").equals("f")){
+                        curr.addType("f");
+                    }else if(aBool1.getData("type").equals("b")&&aBool2.getData("type").equals("b")) {
+                        curr.addType("b");
+                    }
                 }
                 break;
+                //</editor-fold>
         }
     }
     private int identifyProd(SyntaxNode curr){
