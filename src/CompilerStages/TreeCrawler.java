@@ -341,9 +341,11 @@ public class TreeCrawler {
                 //<editor-fold desc="output">
                 SyntaxNode outputVar = curr.getChildren().get(1);
                 String outputVarT = symTable.getTable().get(outputVar.getChildren().get(0).getData("internalName")).get("type");
-                if (outputVarT.equals("s"))
+                if (outputVarT.equals("s")) {
+                    outputVar.addType("c");
                     curr.addType("c");
-                else if (outputVarT.equals("n")) {
+                }else if (outputVarT.equals("n")) {
+                    outputVar.addType("c");
                     curr.addType("c");
                 } else {
                     outputVar.addType("o");
@@ -400,6 +402,8 @@ public class TreeCrawler {
                     symTable.getTable().get(aVar1.getChildren().get(0).getData("internalName")).put("type", "o");
                     symTable.getTable().get(aVar1.getChildren().get(0).getData("internalName")).put("type", "o");
                 }
+                typeCrawl(aVar1);
+                typeCrawl(aVar2);
                 break;
             //</editor-fold>
             case 21:
@@ -440,6 +444,7 @@ public class TreeCrawler {
                     curr.addType("n");
                     symTable.getTable().get(curr.getChildren().get(0).getChildren().get(0).getData("internalName")).put("type", "n");
                 }
+                typeCrawl((curr.getChildren().get(0)));
                 break;
             //</editor-fold>
             case 23:
@@ -582,35 +587,63 @@ public class TreeCrawler {
                 }
                 break;
             //</editor-fold>
-            case 32://eq(var,var)
+            case 32:
                 //<editor-fold desc="eq var var">
                 SyntaxNode eVar1, eVar2;
                 String eVar1T, eVar2T;
                 eVar1 = curr.getChildren().get(1);
                 eVar2 = curr.getChildren().get(2);
+                eVar1T = "u";
+                eVar2T = "u";
                 //get types from ST
-                eVar1T = symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).get("type");
-                eVar2T = symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).get("type");
+                if(symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName"))!=null) {
+                    eVar1T = symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).get("type");
+                }else if(eVar1.getData("symbol").equals("NUMEXPR")){
+                    if (eVar1.getData("type").equals("n")) {
+                        eVar1T = "n";
+                    } else {
+                        typeCrawl(eVar1);
+                        eVar1T = eVar1.getData("type");
+                    }
+                }
+                if(symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName"))!=null) {
+                    eVar2T = symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).get("type");
+                }else if(eVar2.getData("symbol").equals("NUMEXPR")) {
+                    if (eVar2.getData("type").equals("n")) {
+                        eVar2T = "n";
+                    } else {
+                        typeCrawl(eVar2);
+                        eVar2T = eVar2.getData("type");
+                    }
+                }else{
+                    eVar2T = "u";
+                }
                 if ((eVar1T.equals("n") && eVar2T.equals("s")) || (eVar2T.equals("n") && eVar1T.equals("s"))){
                     curr.addType("f");
                     typeCrawl(eVar1);
                     typeCrawl(eVar2);
                 }else if ((eVar1T.equals("n") && !eVar2T.equals("s")) || (eVar2T.equals("n") && !eVar1T.equals("s"))){
                     curr.addType("b");//assign vars to n
-                    symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).put("type", "n");
-                    symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).put("type", "n");
+                    if(symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")) != null)
+                        symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).put("type", "n");
+                    if(symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName"))!=null)
+                        symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).put("type", "n");
                     typeCrawl(eVar1);
                     typeCrawl(eVar2);
                 }else if((!eVar1T.equals("n")&&eVar2T.equals("s"))||(!eVar2T.equals("n")&&eVar1T.equals("s"))) {
                     curr.addType("b");//assign vars to s
-                    symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).put("type", "s");
-                    symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).put("type", "s");
+                    if(symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")) != null)
+                        symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).put("type", "s");
+                    if(symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName"))!=null)
+                        symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).put("type", "s");
                     typeCrawl(eVar1);
                     typeCrawl(eVar2);
             }   else{
                     curr.addType("b");//assign vars to o
-                    symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).put("type", "o");
-                    symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).put("type", "o");
+                    if(symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")) != null)
+                        symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).put("type", "o");
+                    if(symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName"))!=null)
+                        symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).put("type", "o");
                     typeCrawl(eVar1);
                     typeCrawl(eVar2);
                 }
@@ -916,8 +949,7 @@ public class TreeCrawler {
                 tempV5 = curr.getChildren().elementAt(5).getChildren().elementAt(0);
                 if(!(tempV1.getData("internalName").equals(tempV2.getData("internalName")))||
                         !(tempV1.getData("internalName").equals(tempV4.getData("internalName")))||
-                        !(tempV1.getData("internalName").equals(tempV5.getData("internalName")))||
-                        (tempV1.getData("internalName").equals(tempV3.getData("internalName")))){
+                        !(tempV1.getData("internalName").equals(tempV5.getData("internalName")))){
                     treeRoot.error = true;
                     treeRoot.errMessage = "for loop contains incorrect variable structure in declaration";
                     return;

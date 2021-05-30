@@ -1,10 +1,31 @@
-var1 = 10;
-var2 = "20";
-input(var1);
-if(eq(var1,var2))then{
-    while(not eq(var1,var2)){
-        for(var1=0;var1<var1;var1=add(var1,1)){
-            halt;
-        }
+input(x);
+n = x;
+r = "unknown";
+s = "even";
+checknumber;
+if(eq(r,s))
+    then{
+        output(s);
+        checknumber
     }
+    else{
+        output(r)
+    };
+halt;
+proc checknumber{
+    m = n;
+    if(not (m<a))
+        then{m = mult(m, -1)};
+    while(not eq(m, s)){
+        m = sub(m,2)
+    };
+    for(a = 0; a < a; a = add(a, 1)){
+        checknumber
+    };
+    if(eq(m,0))
+    then{ r = "even"}
+    else{ r = "odd"}
+}
+proc checknumber2{
+    val = m
 }

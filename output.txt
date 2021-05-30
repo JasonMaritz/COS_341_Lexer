@@ -3,20 +3,149 @@ NONTERMINAL: PROGPRIME, Scope: 0, type: c
 	NONTERMINAL: PROG, Scope: 0, type: c
 		NONTERMINAL: CODE, Scope: 0, type: c
 			NONTERMINAL: INSTR, Scope: 0, type: c
-				NONTERMINAL: ASSIGN, Scope: 0, type: c
+				NONTERMINAL: IO, Scope: 0, type: c
+					TERMINAL: input, Scope: 0
 					NONTERMINAL: VAR, Scope: 0, type: n
-						TERMINAL: var1, Scope: 0, internalName: V1
-					NONTERMINAL: NUMEXPR, Scope: 0, type: n
-						TERMINAL: 10, Scope: 0
+						TERMINAL: x, Scope: 0, internalName: V1
 			NONTERMINAL: CODE, Scope: 0, type: c
 				NONTERMINAL: INSTR, Scope: 0, type: c
 					NONTERMINAL: ASSIGN, Scope: 0, type: c
-						NONTERMINAL: VAR, Scope: 0, type: s
-							TERMINAL: var2, Scope: 0, internalName: V2
-						TERMINAL: "20", Scope: 0
+						NONTERMINAL: VAR, Scope: 0, type: n
+							TERMINAL: n, Scope: 0, internalName: V2
+						NONTERMINAL: VAR, Scope: 0, type: n
+							TERMINAL: x, Scope: 0, internalName: V1
 				NONTERMINAL: CODE, Scope: 0, type: c
 					NONTERMINAL: INSTR, Scope: 0, type: c
-						NONTERMINAL: IO, Scope: 0, type: c
-							TERMINAL: input, Scope: 0
-							NONTERMINAL: VAR, Scope: 0, type: n
-								TERMINAL: var1, Scope: 0, internalName: V1
+						NONTERMINAL: ASSIGN, Scope: 0, type: c
+							NONTERMINAL: VAR, Scope: 0, type: s
+								TERMINAL: r, Scope: 0, internalName: V3
+							TERMINAL: "unknown", Scope: 0
+					NONTERMINAL: CODE, Scope: 0, type: c
+						NONTERMINAL: INSTR, Scope: 0, type: c
+							NONTERMINAL: ASSIGN, Scope: 0, type: c
+								NONTERMINAL: VAR, Scope: 0, type: s
+									TERMINAL: s, Scope: 0, internalName: V4
+								TERMINAL: "even", Scope: 0
+						NONTERMINAL: CODE, Scope: 0, type: c
+							NONTERMINAL: INSTR, Scope: 0, type: c
+								NONTERMINAL: CALL, Scope: 0, type: c
+									TERMINAL: checknumber, Scope: 0, internalName: p0
+							NONTERMINAL: CODE, Scope: 0, type: c
+								NONTERMINAL: INSTR, Scope: 0, type: c
+									NONTERMINAL: BRANCH, Scope: 0, type: c
+										TERMINAL: if, Scope: 0
+										NONTERMINAL: BOOL, Scope: 0, type: b
+											TERMINAL: eq, Scope: 0
+											NONTERMINAL: VAR, Scope: 0, type: s
+												TERMINAL: r, Scope: 0, internalName: V3
+											NONTERMINAL: VAR, Scope: 0, type: s
+												TERMINAL: s, Scope: 0, internalName: V4
+										TERMINAL: then, Scope: 0
+										NONTERMINAL: CODE, Scope: 0, type: c
+											NONTERMINAL: INSTR, Scope: 0, type: c
+												NONTERMINAL: IO, Scope: 0, type: c
+													TERMINAL: output, Scope: 0
+													NONTERMINAL: VAR, Scope: 0, type: c
+														TERMINAL: s, Scope: 0, internalName: V4
+											NONTERMINAL: CODE, Scope: 0, type: c
+												NONTERMINAL: INSTR, Scope: 0, type: c
+													NONTERMINAL: CALL, Scope: 0, type: c
+														TERMINAL: checknumber, Scope: 0, internalName: p0
+										TERMINAL: else, Scope: 0
+										NONTERMINAL: CODE, Scope: 0, type: c
+											NONTERMINAL: INSTR, Scope: 0, type: c
+												NONTERMINAL: IO, Scope: 0, type: c
+													TERMINAL: output, Scope: 0
+													NONTERMINAL: VAR, Scope: 0, type: c
+														TERMINAL: r, Scope: 0, internalName: V3
+								NONTERMINAL: CODE, Scope: 0, type: c
+									NONTERMINAL: INSTR, Scope: 0, type: c
+										TERMINAL: halt, Scope: 0
+		NONTERMINAL: PROC_DEFS, Scope: 0, type: c
+			NONTERMINAL: PROC, Scope: 0.1, type: c
+				TERMINAL: proc, Scope: 0.1
+				TERMINAL: checknumber, Scope: 0.1, internalName: p0
+				NONTERMINAL: PROG, Scope: 0.1, type: c
+					NONTERMINAL: CODE, Scope: 0.1, type: c
+						NONTERMINAL: INSTR, Scope: 0.1, type: c
+							NONTERMINAL: ASSIGN, Scope: 0.1, type: c
+								NONTERMINAL: VAR, Scope: 0.1, type: n
+									TERMINAL: m, Scope: 0.1, internalName: V5
+								NONTERMINAL: VAR, Scope: 0.1, type: n
+									TERMINAL: n, Scope: 0.1, internalName: V2
+						NONTERMINAL: CODE, Scope: 0.1, type: c
+							NONTERMINAL: INSTR, Scope: 0.1, type: c
+								NONTERMINAL: BRANCH, Scope: 0.1, type: c
+									TERMINAL: if, Scope: 0.1
+									NONTERMINAL: BOOL, Scope: 0.1, type: b
+										TERMINAL: not, Scope: 0.1
+										NONTERMINAL: BOOL, Scope: 0.1, type: b
+											NONTERMINAL: VAR, Scope: 0.1, type: n
+												TERMINAL: m, Scope: 0.1, internalName: V5
+											TERMINAL: <, Scope: 0.1
+											NONTERMINAL: VAR, Scope: 0.1, type: n
+												TERMINAL: a, Scope: 0.1, internalName: V6
+									TERMINAL: then, Scope: 0.1
+									NONTERMINAL: CODE, Scope: 0.1, type: c
+										NONTERMINAL: INSTR, Scope: 0.1, type: c
+											NONTERMINAL: ASSIGN, Scope: 0.1, type: c
+												NONTERMINAL: VAR, Scope: 0.1, type: n
+													TERMINAL: m, Scope: 0.1, internalName: V5
+												NONTERMINAL: NUMEXPR, Scope: 0.1, type: n
+													NONTERMINAL: CALC, Scope: 0.1, type: n
+														TERMINAL: mult, Scope: 0.1
+														NONTERMINAL: NUMEXPR, Scope: 0.1, type: n
+															NONTERMINAL: VAR, Scope: 0.1, type: n
+																TERMINAL: m, Scope: 0.1, internalName: V5
+														NONTERMINAL: NUMEXPR, Scope: 0.1, type: n
+															TERMINAL: -1, Scope: 0.1
+							NONTERMINAL: CODE, Scope: 0.1, type: c
+								NONTERMINAL: INSTR, Scope: 0.1, type: c
+									NONTERMINAL: LOOP, Scope: 0.1, type: c
+										TERMINAL: while, Scope: 0.1
+										NONTERMINAL: BOOL, Scope: 0.1, type: b
+											TERMINAL: not, Scope: 0.1
+											NONTERMINAL: BOOL, Scope: 0.1, type: f
+												TERMINAL: eq, Scope: 0.1
+												NONTERMINAL: VAR, Scope: 0.1, type: n
+													TERMINAL: m, Scope: 0.1, internalName: V5
+												NONTERMINAL: VAR, Scope: 0.1, type: s
+													TERMINAL: s, Scope: 0.1, internalName: V4
+										NONTERMINAL: CODE, Scope: 0.1, type: c
+											NONTERMINAL: INSTR, Scope: 0.1, type: c
+												NONTERMINAL: ASSIGN, Scope: 0.1, type: c
+													NONTERMINAL: VAR, Scope: 0.1, type: n
+														TERMINAL: m, Scope: 0.1, internalName: V5
+													NONTERMINAL: NUMEXPR, Scope: 0.1, type: n
+														NONTERMINAL: CALC, Scope: 0.1, type: n
+															TERMINAL: sub, Scope: 0.1
+															NONTERMINAL: NUMEXPR, Scope: 0.1, type: n
+																NONTERMINAL: VAR, Scope: 0.1, type: n
+																	TERMINAL: m, Scope: 0.1, internalName: V5
+															NONTERMINAL: NUMEXPR, Scope: 0.1, type: n
+																TERMINAL: 2, Scope: 0.1
+								NONTERMINAL: CODE, Scope: 0.1, type: c
+									NONTERMINAL: CODE, Scope: 0.1, type: c
+										NONTERMINAL: INSTR, Scope: 0.1, type: c
+											NONTERMINAL: BRANCH, Scope: 0.1, type: c
+												TERMINAL: if, Scope: 0.1
+												NONTERMINAL: BOOL, Scope: 0.1, type: b
+													TERMINAL: eq, Scope: 0.1
+													NONTERMINAL: VAR, Scope: 0.1, type: n
+														TERMINAL: m, Scope: 0.1, internalName: V5
+													NONTERMINAL: NUMEXPR, Scope: 0.1, type: n
+														TERMINAL: 0, Scope: 0.1
+												TERMINAL: then, Scope: 0.1
+												NONTERMINAL: CODE, Scope: 0.1, type: c
+													NONTERMINAL: INSTR, Scope: 0.1, type: c
+														NONTERMINAL: ASSIGN, Scope: 0.1, type: c
+															NONTERMINAL: VAR, Scope: 0.1, type: s
+																TERMINAL: r, Scope: 0.1, internalName: V3
+															TERMINAL: "even", Scope: 0.1
+												TERMINAL: else, Scope: 0.1
+												NONTERMINAL: CODE, Scope: 0.1, type: c
+													NONTERMINAL: INSTR, Scope: 0.1, type: c
+														NONTERMINAL: ASSIGN, Scope: 0.1, type: c
+															NONTERMINAL: VAR, Scope: 0.1, type: s
+																TERMINAL: r, Scope: 0.1, internalName: V3
+															TERMINAL: "odd", Scope: 0.1

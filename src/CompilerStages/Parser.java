@@ -3,6 +3,8 @@ package CompilerStages;
 import Nodes.SyntaxNode;
 import Nodes.TokenNode;
 
+import javax.swing.*;
+
 public class Parser {
     TokenNode input;
     TokenNode LLHead;
@@ -288,7 +290,10 @@ public class Parser {
             if(input.equals(TokenNode.Type.VARNAME)){
                 res.addChild(parseVAR());
                 match(new TokenNode(TokenNode.Type.COMMA, ","));
-                res.addChild(parseVAR());
+                if(input.equals(TokenNode.Type.VARNAME))
+                    res.addChild(parseVAR());
+                else
+                    res.addChild(parseNUMEXPR());
                 match(new TokenNode(TokenNode.Type.RPAREN, ")"));
             }else if(input.equals(TokenNode.Type.INTEGER)||input.equals("add")||input.equals("sub")||input.equals("mult")){//NUMEXPR
                 res.addChild(parseNUMEXPR());
