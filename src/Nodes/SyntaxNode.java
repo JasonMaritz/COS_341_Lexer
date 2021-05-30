@@ -4,10 +4,24 @@ import java.util.HashMap;
 import java.util.Vector;
 
 public class SyntaxNode {
+    public enum type{TERMINAL, NONTERMINAL}
+    type nodeType;
     public boolean error;
     public String errMessage;
     public boolean warn;
     public String warnMessage="";
+    HashMap<String, String> data;
+    Vector<SyntaxNode> children;
+
+    public SyntaxNode(SyntaxNode syntaxNode) {
+        nodeType = syntaxNode.nodeType;
+        error = syntaxNode.error;
+        errMessage = syntaxNode.errMessage;
+        warn = syntaxNode.warn;
+        warnMessage = syntaxNode.warnMessage;
+        data = (HashMap<String, String>) syntaxNode.data.clone();
+        children = (Vector<SyntaxNode>) syntaxNode.children.clone();
+    }
 
     public Vector<SyntaxNode> getChildren() {
         return  children;
@@ -17,13 +31,11 @@ public class SyntaxNode {
         return data.get(key);
     }
 
-    public enum type{TERMINAL, NONTERMINAL}
-    type nodeType;
+
     public type getNodeType(){
         return nodeType;
     }
-    HashMap<String, String> data;
-    Vector<SyntaxNode> children;
+
     public SyntaxNode(type ntype, String symbol){
         data = new HashMap<>();
         data.put("symbol", symbol);

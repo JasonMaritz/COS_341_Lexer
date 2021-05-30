@@ -1,1 +1,22 @@
-Type error detected!
+WARNING: infinite loop
+NONTERMINAL: PROGPRIME, Scope: 0, type: c
+	NONTERMINAL: PROG, Scope: 0, type: c
+		NONTERMINAL: CODE, Scope: 0, type: c
+			NONTERMINAL: INSTR, Scope: 0, type: c
+				NONTERMINAL: ASSIGN, Scope: 0, type: c
+					NONTERMINAL: VAR, Scope: 0, type: n
+						TERMINAL: var1, Scope: 0, internalName: V1
+					NONTERMINAL: NUMEXPR, Scope: 0, type: n
+						TERMINAL: 10, Scope: 0
+			NONTERMINAL: CODE, Scope: 0, type: c
+				NONTERMINAL: INSTR, Scope: 0, type: c
+					NONTERMINAL: ASSIGN, Scope: 0, type: c
+						NONTERMINAL: VAR, Scope: 0, type: s
+							TERMINAL: var2, Scope: 0, internalName: V2
+						TERMINAL: "20", Scope: 0
+				NONTERMINAL: CODE, Scope: 0, type: c
+					NONTERMINAL: INSTR, Scope: 0, type: c
+						NONTERMINAL: IO, Scope: 0, type: c
+							TERMINAL: input, Scope: 0
+							NONTERMINAL: VAR, Scope: 0, type: n
+								TERMINAL: var1, Scope: 0, internalName: V1

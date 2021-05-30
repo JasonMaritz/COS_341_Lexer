@@ -48,6 +48,7 @@ public class Main {
                 writer.close();
                 return;
             }
+            scoper.deadCodeCrawl();
             //----------------------------------------------------------------------------------------------------------
             output = parser.getOutput().toString(0);
             writer.append(output);

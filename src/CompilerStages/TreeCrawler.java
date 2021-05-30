@@ -119,6 +119,101 @@ public class TreeCrawler {
         treeRoot.error = ret;
         return ret;
     }
+    public void deadCodeCrawl(){
+        deadCodeCrawl(treeRoot);
+        deadCodePrune(treeRoot);
+    }
+    private void deadCodeCrawl(SyntaxNode curr){
+        if(curr == null || curr.getNodeType().name().equals(SyntaxNode.type.TERMINAL.name()))
+            return;
+        for(SyntaxNode c: curr.getChildren()){
+            deadCodeCrawl(c);
+        }
+        //<editor-fold desc="Meta Rule">
+        boolean isDead = curr.getChildren().get(0).getData("type").equals("d");
+        for(SyntaxNode c: curr.getChildren()){
+            isDead = isDead && c.getData("type").equals("d");
+        }
+        if(isDead){
+            curr.addType("d");
+            return;
+        }
+        //</editor-fold>
+        //<editor-fold desc="Branch or Loop">
+        if(curr.getData("symbol").equals("BRANCH")){
+            int production = identifyProd(curr);
+            switch (production){
+                case 28:
+                    //if then
+                    SyntaxNode fBool = curr.getChildren().get(1);
+                    if(fBool.getChildren().get(0).getData("symbol").equals("not")){
+                        SyntaxNode fBool2 = fBool.getChildren().get(1);
+                        if(fBool2.getData("type").equals("f")){
+                            SyntaxNode ifCode = new SyntaxNode(curr.getChildren().get(3));
+                            curr.getChildren().removeAllElements();
+                            curr.getChildren().add(ifCode);
+                        }
+                    }else{
+                        if(fBool.getData("type").equals("f")){
+                            curr.addType("d");
+                        }
+                    }
+                    break;
+                case 29:
+                    SyntaxNode f1Bool = curr.getChildren().get(1);
+                    if(f1Bool.getChildren().get(0).getData("symbol").equals("not")){
+                        SyntaxNode fBool2 = f1Bool.getChildren().get(1);
+                        if(fBool2.getData("type").equals("f")){
+                            SyntaxNode ifCode = new SyntaxNode(curr.getChildren().get(3));
+                            curr.getChildren().removeAllElements();
+                            curr.getChildren().add(ifCode);
+                        }
+                    }else{
+                        SyntaxNode fBool2 = f1Bool.getChildren().get(1);
+                        if(fBool2.getData("type").equals("f")){
+                            SyntaxNode ifCode = new SyntaxNode(curr.getChildren().get(5));
+                            curr.getChildren().removeAllElements();
+                            curr.getChildren().add(ifCode);
+                        }
+                    }
+                    break;
+            }
+        }else if(curr.getData("symbol").equals("LOOP")){
+            int production = identifyProd(curr);
+            switch (production){
+                case 30:
+                    //while
+                    SyntaxNode wBool = curr.getChildren().get(1);
+                    if(wBool.getChildren().get(0).getData("symbol").equals("not")){
+                        if(wBool.getChildren().get(1).getData("type").equals("f")) {
+                            treeRoot.warn = true;
+                            treeRoot.warnMessage = "WARNING: infinite loop";
+                        }
+                    }else{
+                        if(wBool.getData("type").equals("f"))
+                            curr.addType("d");
+                    }
+                    break;
+                case 31:
+                    //for
+                    SyntaxNode fVar1, fVar2;
+                    fVar1 = curr.getChildren().get(2).getChildren().get(0);
+                    fVar2 = curr.getChildren().get(3).getChildren().get(0);
+                    if(fVar1.getData("internalName").equals(fVar2.getData("internalName")))
+                        curr.addType("d");
+                    break;
+            }
+        }
+        //</editor-fold>
+    }
+    private void deadCodePrune(SyntaxNode curr){
+        if(curr == null||curr.getData("type").equals("d"))
+            return;
+        curr.getChildren().removeIf(c -> c!=null && c.getData("type").equals("d"));
+        for(SyntaxNode c: curr.getChildren()){
+            deadCodePrune(c);
+        }
+    }
     private boolean errorOut(SyntaxNode curr){
         if(curr == null)
             return false;
