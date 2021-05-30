@@ -50,6 +50,8 @@ public class SyntaxNode {
             if(data.get("internalName")!=null)
                 res.append(", internalName: ").append(data.get("internalName"));
         }
+        if(nodeType.name().equals(type.NONTERMINAL.name()))
+            res.append(", type: ").append(data.get("type"));
         res.append("\n");
         for(SyntaxNode n: children){
             if(n!=null) {
