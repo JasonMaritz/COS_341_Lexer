@@ -5,6 +5,7 @@ import Nodes.SyntaxNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Vector;
 
 public class TreeCrawler {
@@ -110,18 +111,34 @@ public class TreeCrawler {
     public void typeCrawl(){
         populateSymbolTable(treeRoot);
         initTypes(treeRoot);
-        typeCrawl(treeRoot);
+        HashMap<String, HashMap<String, String>> syms = new HashMap<>();
+        while (!symTable.getTable().equals(syms)) {
+            syms = clone(symTable);
+            typeCrawl(treeRoot,false);
+        }
     }
     public boolean errorOut(){
-        if(!treeRoot.error)
+        boolean ret = false;
+        if(!treeRoot.error) {
             treeRoot.errMessage = "";
-        boolean ret = errorOut(treeRoot);
-        treeRoot.error = ret;
+            ret = errorOut(treeRoot);
+            treeRoot.error = ret;
+        }else{
+            ret = false;
+        }
         return ret;
     }
     public void deadCodeCrawl(){
         deadCodeCrawl(treeRoot);
         deadCodePrune(treeRoot);
+    }
+    private HashMap<String, HashMap<String, String>> clone(SymbolTable symTable) {
+        HashMap<String, HashMap<String, String>> ret = new HashMap<>();
+        for(String s: symTable.getTable().keySet()){
+            String r = new String(s);
+            ret.put(r, (HashMap<String, String>) symTable.getTable().get(r).clone());
+        }
+        return ret;
     }
     private void deadCodeCrawl(SyntaxNode curr){
         if(curr == null || curr.getNodeType().name().equals(SyntaxNode.type.TERMINAL.name()))
@@ -132,7 +149,8 @@ public class TreeCrawler {
         //<editor-fold desc="Meta Rule">
         boolean isDead = curr.getChildren().get(0).getData("type").equals("d");
         for(SyntaxNode c: curr.getChildren()){
-            isDead = isDead && c.getData("type").equals("d");
+            if(c!=null)
+                isDead = isDead && c.getData("type").equals("d");
         }
         if(isDead){
             curr.addType("d");
@@ -169,8 +187,7 @@ public class TreeCrawler {
                             curr.getChildren().add(ifCode);
                         }
                     }else{
-                        SyntaxNode fBool2 = f1Bool.getChildren().get(1);
-                        if(fBool2.getData("type").equals("f")){
+                        if(f1Bool.getData("type").equals("f")){
                             SyntaxNode ifCode = new SyntaxNode(curr.getChildren().get(5));
                             curr.getChildren().removeAllElements();
                             curr.getChildren().add(ifCode);
@@ -223,7 +240,32 @@ public class TreeCrawler {
         if(curr.getData("type").equals("u")||curr.getData("type").equals("e")){
             ret = true;
             treeRoot.error = true;
-            treeRoot.errMessage = "Type error detected!";
+            int production = identifyProd(curr);
+            switch (production){
+                //cases for all error types
+                case 15:
+                    treeRoot.errMessage += "Type error detected! input() tries to input into string var\n";
+                    break;
+                case 19:    //var string
+                    treeRoot.errMessage += "Type error detected! Trying to set variable to a string literal when var is of type number\n";
+                    break;
+                case 20:    //var var
+                    treeRoot.errMessage += "Type error detected! Trying to assign variables of different types\n";
+                    break;
+                case 21:    //var num
+                    treeRoot.errMessage += "Type error detected! Trying to assign a variable of type string a value of type number\n";
+                    break;
+                case 22: //num var
+                    treeRoot.errMessage += "Type error detected! Variable of type number expected but variable of type string provided\n";
+                    break;
+                case 35:
+                case 36:
+                    treeRoot.errMessage += "Type error detected! Trying to perform \"<\" or \">\" comparisons with strings\n";
+                    break;
+                case 31:
+                    treeRoot.errMessage += "Type error detected! for loop contains a variable of type string\n";
+                    break;
+            }
         }
         for(SyntaxNode c: curr.getChildren()){
             boolean ret1 = errorOut(c);
@@ -257,7 +299,7 @@ public class TreeCrawler {
             populateSymbolTable(c);
         }
     }
-    private void typeCrawl(SyntaxNode curr){
+    private void typeCrawl(SyntaxNode curr, boolean checked){
         if(curr == null)
             return;
         if(curr.getNodeType().name().equals(SyntaxNode.type.TERMINAL.name()))
@@ -275,10 +317,13 @@ public class TreeCrawler {
             case 14:
                 //<editor-fold desc="single Line Prods">
                 SyntaxNode c = curr.getChildren().get(0);
-                if (c.getData("type").equals("c"))
+                if (c.getData("type").equals("c")&&!checked) {
                     curr.addType("c");
-                else {
-                    typeCrawl(c);
+                    typeCrawl(c, false);
+                }else if(c.getData("type").equals("c")&&!checked) {
+                    curr.addType("c");
+                }else{
+                    typeCrawl(c,false);
                     if (c.getData("type").equals("c"))
                         curr.addType("c");
                 }
@@ -291,11 +336,14 @@ public class TreeCrawler {
                 SyntaxNode c1, c2;
                 c1 = curr.getChildren().get(0);
                 c2 = curr.getChildren().get(1);
-                if (c1.getData("type").equals("c") && c2.getData("type").equals("c"))
+                if (c1.getData("type").equals("c") && c2.getData("type").equals("c")&&checked) {
                     curr.addType("c");
-                else {
-                    typeCrawl(c1);
-                    typeCrawl(c2);
+                }else if(c1.getData("type").equals("c") && c2.getData("type").equals("c")&&!checked) {
+                    typeCrawl(c1,true);
+                    typeCrawl(c2, true);
+                }else {
+                    typeCrawl(c1,false);
+                    typeCrawl(c2, false);
                     if (c2 != null) {
                         if (c1.getData("type").equals("c") && c2.getData("type").equals("c"))
                             curr.addType("c");
@@ -312,7 +360,7 @@ public class TreeCrawler {
                 if (prog.getData("type").equals("c"))
                     curr.addType("c");
                 else {
-                    typeCrawl(prog);
+                    typeCrawl(prog, false);
                     if (prog.getData("type").equals("c"))
                         curr.addType("c");
                 }
@@ -402,8 +450,8 @@ public class TreeCrawler {
                     symTable.getTable().get(aVar1.getChildren().get(0).getData("internalName")).put("type", "o");
                     symTable.getTable().get(aVar1.getChildren().get(0).getData("internalName")).put("type", "o");
                 }
-                typeCrawl(aVar1);
-                typeCrawl(aVar2);
+                typeCrawl(aVar1,false);
+                typeCrawl(aVar2,false);
                 break;
             //</editor-fold>
             case 21:
@@ -415,7 +463,7 @@ public class TreeCrawler {
                 nVar1T = symTable.getTable().get(nVar1.getChildren().get(0).getData("internalName")).get("type");
                 if (nVar1T.equals("s"))
                     curr.addType("e");
-                if (!(nVar1T.equals("s")) && nNum1.getData("type").equals("n")) {
+                else if (!(nVar1T.equals("s")) && nNum1.getData("type").equals("n")) {
                     nVar1.addType("n");
                     symTable.getTable().get(nVar1.getChildren().get(0).getData("internalName")).put("type", "n");
                     curr.addType("c");
@@ -424,7 +472,7 @@ public class TreeCrawler {
                     symTable.getTable().get(nVar1.getChildren().get(0).getData("internalName")).put("type", "n");
                     nVar1 = curr.getChildren().get(0);
                     nNum1 = curr.getChildren().get(1);
-                    typeCrawl(nNum1);
+                    typeCrawl(nNum1,false);
                     if (nVar1T.equals("s"))
                         curr.addType("e");
                     if (!(nVar1T.equals("s")) && nNum1.getData("type").equals("n")) {
@@ -444,7 +492,7 @@ public class TreeCrawler {
                     curr.addType("n");
                     symTable.getTable().get(curr.getChildren().get(0).getChildren().get(0).getData("internalName")).put("type", "n");
                 }
-                typeCrawl((curr.getChildren().get(0)));
+                typeCrawl((curr.getChildren().get(0)),false);
                 break;
             //</editor-fold>
             case 23:
@@ -458,7 +506,7 @@ public class TreeCrawler {
                 if (Calc.getData("type").equals("n"))
                     curr.addType("n");
                 else {
-                    typeCrawl(Calc);
+                    typeCrawl(Calc,false);
                     if (Calc.getData("type").equals("n"))
                         curr.addType("n");
                 }
@@ -474,8 +522,8 @@ public class TreeCrawler {
                 if (num1.getData("type").equals("n") && num2.getData("type").equals("n"))
                     curr.addType("n");
                 else {
-                    typeCrawl(num1);
-                    typeCrawl(num2);
+                    typeCrawl(num1,false);
+                    typeCrawl(num2,false);
                     if (num1.getData("type").equals("n") && num2.getData("type").equals("n"))
                         curr.addType("n");
                 }
@@ -489,8 +537,8 @@ public class TreeCrawler {
                 if ((bool.getData("type").equals("b") || bool.getData("type").equals("f")) && code1.getData("type").equals("c"))
                     curr.addType("c");
                 else {
-                    typeCrawl(bool);
-                    typeCrawl(code1);
+                    typeCrawl(bool,false);
+                    typeCrawl(code1,false);
                     if ((bool.getData("type").equals("b") || bool.getData("type").equals("f")) && code1.getData("type").equals("c"))
                         curr.addType("c");
                 }
@@ -505,9 +553,9 @@ public class TreeCrawler {
                 if ((bool2.getData("type").equals("b") || bool2.getData("type").equals("f")) && code21.getData("type").equals("c") && code22.getData("type").equals("c"))
                     curr.addType("c");
                 else {
-                    typeCrawl(bool2);
-                    typeCrawl(code21);
-                    typeCrawl(code22);
+                    typeCrawl(bool2,false);
+                    typeCrawl(code21,false);
+                    typeCrawl(code22,false);
                     if ((bool2.getData("type").equals("b") || bool2.getData("type").equals("f")) && code21.getData("type").equals("c") && code22.getData("type").equals("c"))
                         curr.addType("c");
                 }
@@ -521,8 +569,8 @@ public class TreeCrawler {
                 if ((wBool.getData("type").equals("b") || wBool.getData("type").equals("f")) && wCode.getData("type").equals("c"))
                     curr.addType("c");
                 else {
-                    typeCrawl(wBool);
-                    typeCrawl(wCode);
+                    typeCrawl(wBool,false);
+                    typeCrawl(wCode,false);
                     if ((wBool.getData("type").equals("b") || wBool.getData("type").equals("f")) && wCode.getData("type").equals("c"))
                         curr.addType("c");
                 }
@@ -538,11 +586,11 @@ public class TreeCrawler {
                 fVar4 = curr.getChildren().get(4);
                 fVar5 = curr.getChildren().get(5);
                 fCode = curr.getChildren().get(6);
-                typeCrawl(fVar1);
-                typeCrawl(fVar2);
-                typeCrawl(fVar3);
-                typeCrawl(fVar4);
-                typeCrawl(fVar5);
+                typeCrawl(fVar1,false);
+                typeCrawl(fVar2,false);
+                typeCrawl(fVar3,false);
+                typeCrawl(fVar4,false);
+                typeCrawl(fVar5,false);
                 //get var types from ST
                 fVar1T = symTable.getTable().get(fVar1.getChildren().get(0).getData("internalName")).get("type");
                 fVar2T = symTable.getTable().get(fVar2.getChildren().get(0).getData("internalName")).get("type");
@@ -566,7 +614,7 @@ public class TreeCrawler {
                     symTable.getTable().get(fVar4.getChildren().get(0).getData("internalName")).put("type", "n");
                     symTable.getTable().get(fVar5.getChildren().get(0).getData("internalName")).put("type", "n");
                 } else {
-                    typeCrawl(fCode);
+                    typeCrawl(fCode,false);
                     if (fVar1T.equals("s") || fVar2T.equals("s") ||
                             fVar3T.equals("s") || fVar4T.equals("s") ||
                             fVar5T.equals("s")) {
@@ -602,7 +650,7 @@ public class TreeCrawler {
                     if (eVar1.getData("type").equals("n")) {
                         eVar1T = "n";
                     } else {
-                        typeCrawl(eVar1);
+                        typeCrawl(eVar1,false);
                         eVar1T = eVar1.getData("type");
                     }
                 }
@@ -612,7 +660,7 @@ public class TreeCrawler {
                     if (eVar2.getData("type").equals("n")) {
                         eVar2T = "n";
                     } else {
-                        typeCrawl(eVar2);
+                        typeCrawl(eVar2,false);
                         eVar2T = eVar2.getData("type");
                     }
                 }else{
@@ -620,32 +668,32 @@ public class TreeCrawler {
                 }
                 if ((eVar1T.equals("n") && eVar2T.equals("s")) || (eVar2T.equals("n") && eVar1T.equals("s"))){
                     curr.addType("f");
-                    typeCrawl(eVar1);
-                    typeCrawl(eVar2);
+                    typeCrawl(eVar1,false);
+                    typeCrawl(eVar2,false);
                 }else if ((eVar1T.equals("n") && !eVar2T.equals("s")) || (eVar2T.equals("n") && !eVar1T.equals("s"))){
                     curr.addType("b");//assign vars to n
                     if(symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")) != null)
                         symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).put("type", "n");
                     if(symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName"))!=null)
                         symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).put("type", "n");
-                    typeCrawl(eVar1);
-                    typeCrawl(eVar2);
+                    typeCrawl(eVar1,false);
+                    typeCrawl(eVar2,false);
                 }else if((!eVar1T.equals("n")&&eVar2T.equals("s"))||(!eVar2T.equals("n")&&eVar1T.equals("s"))) {
                     curr.addType("b");//assign vars to s
                     if(symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")) != null)
                         symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).put("type", "s");
                     if(symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName"))!=null)
                         symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).put("type", "s");
-                    typeCrawl(eVar1);
-                    typeCrawl(eVar2);
+                    typeCrawl(eVar1,false);
+                    typeCrawl(eVar2,false);
             }   else{
                     curr.addType("b");//assign vars to o
                     if(symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")) != null)
                         symTable.getTable().get(eVar1.getChildren().get(0).getData("internalName")).put("type", "o");
                     if(symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName"))!=null)
                         symTable.getTable().get(eVar2.getChildren().get(0).getData("internalName")).put("type", "o");
-                    typeCrawl(eVar1);
-                    typeCrawl(eVar2);
+                    typeCrawl(eVar1,false);
+                    typeCrawl(eVar2,false);
                 }
                 break;
                 //</editor-fold>
@@ -657,8 +705,8 @@ public class TreeCrawler {
                 if((bBool1.getData("type").equals("b")||bBool1.getData("type").equals("f"))&&(bBool2.getData("type").equals("b")||bBool2.getData("type").equals("f")))
                     curr.addType("b");
                 else{
-                    typeCrawl(bBool1);
-                    typeCrawl(bBool2);
+                    typeCrawl(bBool1,false);
+                    typeCrawl(bBool2,false);
                     if((bBool1.getData("type").equals("b")||bBool1.getData("type").equals("f"))&&(bBool2.getData("type").equals("b")||bBool2.getData("type").equals("f")))
                         curr.addType("b");
                 }
@@ -672,8 +720,8 @@ public class TreeCrawler {
                 if((bNum1.getData("type").equals("n"))&&(bNum2.getData("type").equals("n")))
                     curr.addType("b");
                 else {
-                    typeCrawl(bNum1);
-                    typeCrawl(bNum2);
+                    typeCrawl(bNum1,false);
+                    typeCrawl(bNum2,false);
                     if((bNum1.getData("type").equals("n"))&&(bNum2.getData("type").equals("n")))
                         curr.addType("b");
                 }
@@ -706,7 +754,7 @@ public class TreeCrawler {
                     curr.addType("b");
                 }
                 else {
-                    typeCrawl(nBool);
+                    typeCrawl(nBool,false);
                     if(nBool.getData("type").equals("b")||nBool.getData("type").equals("f")) {
                         curr.addType("b");
                     }
@@ -721,8 +769,8 @@ public class TreeCrawler {
                 if((oBool1.getData("type").equals("b")||oBool1.getData("type").equals("f"))&&(oBool2.getData("type").equals("b")||oBool2.getData("type").equals("f")))
                     curr.addType("b");
                 else{
-                    typeCrawl(oBool1);
-                    typeCrawl(oBool2);
+                    typeCrawl(oBool1,false);
+                    typeCrawl(oBool2,false);
                     if((oBool1.getData("type").equals("b")||oBool1.getData("type").equals("f"))&&(oBool2.getData("type").equals("b")||oBool2.getData("type").equals("f")))
                         curr.addType("b");
                 }
@@ -742,8 +790,8 @@ public class TreeCrawler {
                 }else if(aBool1.getData("type").equals("b")&&aBool2.getData("type").equals("b")){
                     curr.addType("b");
                 }else{
-                    typeCrawl(aBool1);
-                    typeCrawl(aBool2);
+                    typeCrawl(aBool1,false);
+                    typeCrawl(aBool2,false);
                     if(aBool1.getData("type").equals("f")&&aBool2.getData("type").equals("b")){
                         curr.addType("f");
                     }else if(aBool1.getData("type").equals("b")&&aBool2.getData("type").equals("f")){
@@ -757,6 +805,7 @@ public class TreeCrawler {
                 break;
                 //</editor-fold>
         }
+        curr.getChildren().removeIf(Objects::isNull);
     }
     private int identifyProd(SyntaxNode curr){
         switch (curr.getData("symbol")) {

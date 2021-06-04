@@ -34,9 +34,15 @@ public class Lexer {
 
     public TokenNode getOutput(){
         //make LL from output
-        String[] tokens = output.split(" ");
+        String[] tokens = output.split("-> ");
+        for(int i =0; i < tokens.length; i++){
+            tokens[i] = tokens[i] + "->";
+            while (tokens[i].charAt(0) == ' '){
+                tokens[i] = tokens[i].substring(1);
+            }
+        }
         for(String s: tokens) {
-            if(s.equals("")){
+            if(s.equals("")||s.equals("->")){
                 continue;
             }
             switch (s){
