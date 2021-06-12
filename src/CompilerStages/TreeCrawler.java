@@ -129,7 +129,6 @@ public class TreeCrawler {
         deadCodeCrawl(treeRoot);
         deadCodePrune(treeRoot);
     }
-
     public void valueCrawl(){
         HashMap<String, String> varValues = new HashMap<>();
         HashMap<String, SyntaxNode> procNodes = new HashMap<>();
@@ -139,6 +138,19 @@ public class TreeCrawler {
     public boolean valueError(){
         return treeRoot.error;
     }
+
+    public String translate(){
+        return replaceLabels(translate(treeRoot));
+    }
+    private String translate(SyntaxNode curr){
+        String translatedText = "";
+
+        return translatedText;
+    }
+    private String replaceLabels(String intermediateTranslation){
+        return intermediateTranslation;
+    }
+
     private Vector<String> valueCrawl(SyntaxNode curr, HashMap<String, String> vars, HashMap<String, SyntaxNode> procs, boolean possibleDead){
         if(curr == null || curr.getNodeType().name().equals(SyntaxNode.type.TERMINAL.name()))
             return new Vector<>();
@@ -365,7 +377,6 @@ public class TreeCrawler {
             populateMaps(c, varVals, procs);
         }
     }
-
     private HashMap<String, HashMap<String, String>> clone(SymbolTable symTable) {
         HashMap<String, HashMap<String, String>> ret = new HashMap<>();
         for(String s: symTable.getTable().keySet()){
