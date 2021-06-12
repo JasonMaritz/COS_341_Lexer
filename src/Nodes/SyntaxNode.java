@@ -63,7 +63,8 @@ public class SyntaxNode {
                 res.append(", internalName: ").append(data.get("internalName"));
         }
         if(nodeType.name().equals(type.NONTERMINAL.name()))
-            res.append(", type: ").append(data.get("type"));
+            res.append(", type: ").append(data.get("type")).append(", value: ").append(data.get("value"));
+
         res.append("\n");
         for(SyntaxNode n: children){
             if(n!=null) {
@@ -78,4 +79,5 @@ public class SyntaxNode {
     }
     public void addInternalName(String s){ data.put("internalName", s); }
     public void addType(String s){data.put("type", s);}
+    public void addValue(String s){data.put("value", s);}
 }

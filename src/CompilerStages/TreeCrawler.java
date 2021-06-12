@@ -3,7 +3,6 @@ package CompilerStages;
 import Nodes.SymbolTable;
 import Nodes.SyntaxNode;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Vector;
@@ -123,8 +122,6 @@ public class TreeCrawler {
             treeRoot.errMessage = "";
             ret = errorOut(treeRoot);
             treeRoot.error = ret;
-        }else{
-            ret = false;
         }
         return ret;
     }
@@ -132,6 +129,243 @@ public class TreeCrawler {
         deadCodeCrawl(treeRoot);
         deadCodePrune(treeRoot);
     }
+
+    public void valueCrawl(){
+        HashMap<String, String> varValues = new HashMap<>();
+        HashMap<String, SyntaxNode> procNodes = new HashMap<>();
+        populateMaps(treeRoot, varValues, procNodes);
+        valueCrawl(treeRoot, varValues, procNodes, false);
+    }
+    public boolean valueError(){
+        return treeRoot.error;
+    }
+    private Vector<String> valueCrawl(SyntaxNode curr, HashMap<String, String> vars, HashMap<String, SyntaxNode> procs, boolean possibleDead){
+        if(curr == null || curr.getNodeType().name().equals(SyntaxNode.type.TERMINAL.name()))
+            return new Vector<>();
+        Vector<String> ret = new Vector<>();
+        int production = identifyProd(curr);
+        switch (production){
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 7:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 24:
+                for(SyntaxNode c: curr.getChildren()) {
+                    ret.addAll(valueCrawl(c, vars, procs, possibleDead));
+                }
+                boolean toggle = true;
+                for(SyntaxNode c: curr.getChildren()) {
+                    if (!curr.getChildren().get(0).getData("value").equals("+"))
+                        toggle = false;
+                }
+                if(toggle)
+                    curr.addValue("+");
+                break;
+            case 5:
+            case 8:
+                ret.addAll(valueCrawl(curr.getChildren().get(0), vars, procs,possibleDead));
+                ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs,possibleDead));
+                if(curr.getChildren().get(0).getData("value").equals("+")&&
+                        curr.getChildren().get(1).getData("value").equals("+"))
+                    curr.addValue("+");
+                break;
+                case 6:
+                    ret.addAll(valueCrawl(curr.getChildren().get(2), vars, procs,possibleDead));
+                    if(curr.getChildren().get(2).getData("value").equals("+"))
+                        curr.addValue("+");
+                    break;
+            case 9:
+            case 23:
+                curr.addValue("+");
+                break;
+            case 15:
+                    curr.getChildren().get(1).addValue("+");
+                    //if(!possibleDead) {
+                        vars.put(curr.getChildren().get(1).getChildren().get(0).getData("internalName"), "+");
+                    //}
+                    ret.add(curr.getChildren().get(1).getChildren().get(0).getData("internalName"));
+                    curr.addValue("+");
+                    break;
+                case 16:
+                    if(vars.get(curr.getChildren().get(1).getChildren().get(0).getData("internalName")).equals("+")) {
+                        curr.addValue("+");
+                        curr.getChildren().get(1).addValue("+");
+                    }else{
+                        treeRoot.error = true;
+                        treeRoot.errMessage += "Trying to output a variable without a value\n";
+                    }
+                    break;
+                case 17:
+                    ret.addAll(valueCrawl(procs.get(curr.getChildren().get(0).getData("internalName")), vars, procs, possibleDead));
+                    if(procs.get(curr.getChildren().get(0).getData("internalName")).getData("value").equals("+"))
+                        curr.addValue("+");
+                    break;
+                case 18:
+                    break;
+                case 19:
+                    curr.getChildren().get(0).addValue("+");
+                    //if(!possibleDead) {
+                        vars.put(curr.getChildren().get(0).getChildren().get(0).getData("internalName"), "+");
+                    //}
+                    ret.add(curr.getChildren().get(0).getChildren().get(0).getData("internalName"));
+                    curr.addValue("+");
+                    break;
+                case 20:
+                    if(vars.get(curr.getChildren().get(1).getChildren().get(0).getData("internalName"))!=null &&
+                        vars.get(curr.getChildren().get(1).getChildren().get(0).getData("internalName")).equals("+")){
+                        curr.getChildren().get(0).addValue("+");
+                        curr.getChildren().get(1).addValue("+");
+                        vars.put(curr.getChildren().get(0).getChildren().get(0).getData("internalName"), "+");
+                        vars.put(curr.getChildren().get(1).getChildren().get(0).getData("internalName"), "+");
+                        ret.add(curr.getChildren().get(1).getChildren().get(0).getData("internalName"));
+                        ret.add(curr.getChildren().get(0).getChildren().get(0).getData("internalName"));
+                        curr.addValue("+");
+                    }else{
+                        treeRoot.error = true;
+                        treeRoot.errMessage += "Trying to assign a variable to another variable without a value\n";
+                    }
+                    break;
+                case 21:
+                    ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs, possibleDead));
+                    if(curr.getChildren().get(1).getData("value").equals("+")){
+                        curr.getChildren().get(0).addValue("+");
+                        ret.add(curr.getChildren().get(0).getChildren().get(0).getData("internalName"));
+                        //if(!possibleDead)
+                            vars.put(curr.getChildren().get(0).getChildren().get(0).getData("internalName"), "+");
+                        curr.addValue("+");
+                    }else{
+                        treeRoot.error = true;
+                        treeRoot.errMessage += "Trying to assign a value-less calculation to a variable\n";
+                    }
+                    break;
+                case 22:
+                    if(vars.get(curr.getChildren().get(0).getChildren().get(0).getData("internalName")).equals("+")) {
+                        curr.addValue("+");
+                        curr.getChildren().get(0).addValue("+");
+                    }
+                    break;
+                case 25:
+            case 26:
+            case 27:
+                ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs, possibleDead));
+                ret.addAll(valueCrawl(curr.getChildren().get(2), vars, procs, possibleDead));
+                if(curr.getChildren().get(1).getData("value").equals("+")&&curr.getChildren().get(2).getData("value").equals("+")){
+                    curr.addValue("+");
+                }
+                break;
+            case 28:
+            case 30:
+                ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs, possibleDead));
+                HashMap<String, String> varsTemp = (HashMap<String, String>) vars.clone();
+                ret.addAll(valueCrawl(curr.getChildren().get(2), varsTemp, procs, true));
+                if(curr.getChildren().get(2).getData("value").equals("+"))
+                    curr.addValue("+");
+                break;
+                case 29:
+                    //if-then-else---------------------------------------------------------------------------------------
+                    ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs, possibleDead));
+                    Vector<String> thenCode, elseCode;
+                    varsTemp = (HashMap<String, String>) vars.clone();
+                    thenCode = valueCrawl(curr.getChildren().get(3), varsTemp, procs, true);
+                    varsTemp = (HashMap<String, String>) vars.clone();
+                    elseCode = valueCrawl(curr.getChildren().get(5), varsTemp, procs, true);
+                    if(curr.getChildren().get(1).getData("value").equals("+")&&
+                            curr.getChildren().get(3).getData("value").equals("+")&&
+                            curr.getChildren().get(5).getData("value").equals("+")){
+                        curr.addValue("+");
+                    }
+                    thenCode.removeIf((n)->!elseCode.contains(n));
+                    for(String s: thenCode){
+                        vars.put(s, "+");
+                        ret.add(s);
+                    }
+                    break;
+            case 31:
+                    //for loop
+                SyntaxNode var1, var2;
+                var1 = curr.getChildren().get(1).getChildren().get(0);
+                var2 = curr.getChildren().get(3).getChildren().get(0);
+                //if(!possibleDead) {
+                    vars.put(var1.getData("internalName"), "+");
+                //}
+                curr.getChildren().get(1).addValue("+");
+                curr.getChildren().get(2).addValue("+");
+                curr.getChildren().get(4).addValue("+");
+                curr.getChildren().get(5).addValue("+");
+                ret.addAll(valueCrawl(curr.getChildren().get(6), vars, procs, true));
+                if(vars.get(var1.getData("internalName")).equals("+")&&
+                        vars.get(var2.getData("internalName")).equals("+")&&
+                        curr.getChildren().get(6).getData("value").equals("+")){
+                    curr.getChildren().get(3).addValue("+");
+                    curr.addValue("+");
+                }
+                break;
+                case 32:
+                    //rest are booleans
+                    if(vars.get(curr.getChildren().get(1).getChildren().get(0).getData("internalName")).equals("+")&&
+                            vars.get(curr.getChildren().get(2).getChildren().get(0).getData("internalName")).equals("+")){
+                        curr.getChildren().get(1).addValue("+");
+                        curr.getChildren().get(2).addValue("+");
+                        curr.addValue("+");
+                    }
+                    break;
+                case 33:
+            case 34:
+            case 38:
+            case 39:
+                ret.addAll(valueCrawl(curr.getChildren().get(1), vars,procs,possibleDead));
+                ret.addAll(valueCrawl(curr.getChildren().get(2), vars,procs,possibleDead));
+                if(curr.getChildren().get(2).getData("value").equals("+")&&
+                        curr.getChildren().get(1).getData("value").equals("+")){
+                    curr.addValue("+");
+                    curr.getChildren().get(1).addValue("+");
+                    curr.getChildren().get(2).addValue("+");
+                }
+                break;
+            case 35:
+            case 36:
+                ret.addAll(valueCrawl(curr.getChildren().get(0), vars,procs,possibleDead));
+                ret.addAll(valueCrawl(curr.getChildren().get(2), vars,procs,possibleDead));
+                if(vars.get(curr.getChildren().get(2).getChildren().get(0).getData("internalName")).equals("+")&&
+                        vars.get(curr.getChildren().get(0).getChildren().get(0).getData("internalName")).equals("+")){
+                    curr.addValue("+");
+                    curr.getChildren().get(2).addValue("+");
+                    curr.getChildren().get(0).addValue("+");
+                }
+                break;
+            case 37:
+                ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs, possibleDead));
+                if(curr.getChildren().get(1).getData("value").equals("+")) {
+                    curr.addValue("+");
+                    curr.getChildren().get(1).addValue("+");
+                }
+                break;
+        }
+        return ret;
+    }
+    private void populateMaps(SyntaxNode curr, HashMap<String, String> varVals, HashMap<String, SyntaxNode> procs){
+        if(curr == null || curr.getNodeType().equals(SyntaxNode.type.TERMINAL))
+            return;
+        if(curr.equals(treeRoot))
+            for(String s: symTable.getTable().keySet()){
+            if(s.charAt(0) == 'V'){
+                varVals.put(s,"-");
+            }
+        }
+        else if(curr.getData("symbol").equals("PROC")){
+            procs.put(curr.getChildren().get(1).getData("internalName"), curr.getChildren().get(2));
+        }
+        for(SyntaxNode c: curr.getChildren()){
+            populateMaps(c, varVals, procs);
+        }
+    }
+
     private HashMap<String, HashMap<String, String>> clone(SymbolTable symTable) {
         HashMap<String, HashMap<String, String>> ret = new HashMap<>();
         for(String s: symTable.getTable().keySet()){
@@ -282,17 +516,13 @@ public class TreeCrawler {
             if(intName!=null){
                 HashMap<String, HashMap<String, String>> tab = symTable.getTable();
                 HashMap<String, String> row = tab.get(intName);
-                if(row!=null){
-                    row.put("internalName", intName);
-                    row.put("scope", curr.getData("scope"));
-                    row.put("type", "u");
-                }else{
+                if(row==null){
                     tab.put(intName, new HashMap<>());
                     row = tab.get(intName);
-                    row.put("internalName", intName);
-                    row.put("scope", curr.getData("scope"));
-                    row.put("type", "u");
                 }
+                row.put("internalName", intName);
+                row.put("scope", curr.getData("scope"));
+                row.put("type", "u");
             }
         }
         for(SyntaxNode c: curr.getChildren()){
@@ -905,6 +1135,7 @@ public class TreeCrawler {
     private void initTypes(SyntaxNode curr){
         if(curr != null){
             curr.addType("u");
+            curr.addValue("-");
             for(SyntaxNode c: curr.getChildren()){
                 initTypes(c);
             }

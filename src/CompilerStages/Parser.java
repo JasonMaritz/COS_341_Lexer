@@ -160,11 +160,13 @@ public class Parser {
         }
         return res;
     }
-    private SyntaxNode parseVAR(){
+    private SyntaxNode parseVAR() {
         SyntaxNode res = new SyntaxNode(SyntaxNode.type.NONTERMINAL, "VAR");
-        if(input.equals(TokenNode.Type.VARNAME)){
+        if (input.equals(TokenNode.Type.VARNAME)) {
             res.addChild(new SyntaxNode(SyntaxNode.type.TERMINAL, input.getData()));
             match(input);
+        }else if(input.equals(TokenNode.Type.INTEGER)){
+
         }else{
             System.err.print("Expected variable name, received: " + input.getData());
             System.exit(-1);

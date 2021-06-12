@@ -1,9 +1,26 @@
-a=c;
-input(a);
-input(b);
-input(c);
-while ( eq(a,d) ) { d="deadcode" };
-output(d);
-y=x;
-c=b;
-x=y
+b=1;
+
+c=2;
+
+input(d);
+
+if (eq(d,b)) 
+
+then { e=7;
+       
+       if (eq(d,e)) then { x=9 } else { input(x) } ;
+
+       a = add(x,c)        
+     } 
+
+else { f=8; 
+ 
+       if (eq(d,f)) then { input(x) } else { x=e } ;
+
+       a = mult(d,x)       
+
+     };
+
+x = sub(x,a) ;
+
+output(x)

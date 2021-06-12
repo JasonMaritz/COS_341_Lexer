@@ -41,14 +41,21 @@ public class Main {
             scoper.procRename();
             //-------------------Type Inference-------------------------------------------------------------------------
             scoper.typeCrawl();
-            boolean error = scoper.errorOut();
-            if(error){
+            if(scoper.errorOut()){
                 output = parser.getOutput().toString(0);
                 writer.append(output);
                 writer.close();
                 return;
             }
             scoper.deadCodeCrawl();
+            //-------------------Value inference------------------------------------------------------------------------
+            scoper.valueCrawl();
+            if(scoper.valueError()){
+                output = parser.getOutput().toString(0);
+                writer.append(output);
+                writer.close();
+                return;
+            }
             //----------------------------------------------------------------------------------------------------------
             output = parser.getOutput().toString(0);
             writer.append(output);

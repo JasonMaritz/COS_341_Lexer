@@ -1,1 +1,4 @@
-Type error detected! Trying to set variable to a string literal when var is of type number
+Trying to assign a variable to another variable without a value
+Trying to assign a value-less calculation to a variable
+Trying to assign a value-less calculation to a variable
+Trying to output a variable without a value
