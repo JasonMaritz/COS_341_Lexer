@@ -11,9 +11,13 @@ public class TreeCrawler {
     SyntaxNode treeRoot;
     Vector<String> usedScopes;
     SymbolTable symTable = new SymbolTable();
+    HashMap<String, Integer> labelMap = new HashMap<>();
     int nextScope=1;
     int nextVarName = 1;
     int nextProcName = 0;
+    int nextLineNum = 10;
+    int nextLabel = 1;
+    int nextTVar = 1;
 
     public TreeCrawler(SyntaxNode root){
         usedScopes = new Vector<>();
@@ -133,25 +137,386 @@ public class TreeCrawler {
         HashMap<String, String> varValues = new HashMap<>();
         HashMap<String, SyntaxNode> procNodes = new HashMap<>();
         populateMaps(treeRoot, varValues, procNodes);
-        valueCrawl(treeRoot, varValues, procNodes, false);
+        valueCrawl(treeRoot, varValues, procNodes);
     }
     public boolean valueError(){
         return treeRoot.error;
     }
 
     public String translate(){
-        return replaceLabels(translate(treeRoot));
+        return replaceLabels(translate(treeRoot, false));
     }
-    private String translate(SyntaxNode curr){
+    private String translate(SyntaxNode curr, boolean procedureProgram){
         String translatedText = "";
+        HashMap<String, HashMap<String, String>> syms = symTable.getTable();
+
+        int production = identifyProd(curr);
+        String varName;
+        switch (production){
+            case 1:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 7:
+            case 4:
+                translatedText += translate(curr.getChildren().get(0), procedureProgram);
+                    break;
+            case 2:
+                translatedText +=translate(curr.getChildren().get(0), procedureProgram);
+                if(procedureProgram){
+                    translatedText += nextLineNum + " RETURN\n";
+                }else{
+                    translatedText += nextLineNum + " END\n";
+                }
+                nextLineNum += 10;
+                break;
+            case 3:
+                translatedText += translate(curr.getChildren().get(0), procedureProgram);
+                if(procedureProgram){
+                    translatedText += nextLineNum + " RETURN\n";
+                }else{
+                    translatedText += nextLineNum + " END\n";
+                }
+                nextLineNum += 10;
+                translatedText += translate(curr.getChildren().get(1), true);
+                break;
+            case 5:
+            case 8:
+                translatedText += translate(curr.getChildren().get(0), procedureProgram);
+                translatedText += translate(curr.getChildren().get(1), procedureProgram);
+                break;
+            case 6:
+                syms.get(curr.getChildren().get(1).getData("internalName")).put("labelLocation", Integer.toString(nextLineNum));
+                translatedText += translate(curr.getChildren().get(2), procedureProgram);
+                break;
+            case 9:
+                translatedText += nextLineNum +  " STOP\n";
+                nextLineNum += 10;
+                break;
+            case 15:
+                varName = curr.getChildren().get(1).getChildren().get(0).getData("internalName");
+                if(syms.get(varName).get("type").equals("s"))
+                    varName+="$";
+                varName += "\n";
+                translatedText += nextLineNum +  " INPUT \"\"; " + varName;
+                nextLineNum += 10;
+                break;
+            case 16:
+                varName = curr.getChildren().get(1).getChildren().get(0).getData("internalName");
+                if(syms.get(varName).get("type").equals("s"))
+                    varName+="$";
+                varName += "\n";
+                translatedText += nextLineNum + " PRINT "+varName;
+                nextLineNum += 10;
+                break;
+            case 17:
+                translatedText += nextLineNum + " GOSUB " + "[" + curr.getChildren().get(0).getData("internalName") + "]\n" ;
+                nextLineNum += 10;
+                break;
+            case 18:
+                translatedText += curr.getChildren().get(0).getData("internalName");
+                break;
+            case 19:
+                translatedText += nextLineNum + " LET ";
+                translatedText += curr.getChildren().get(0).getChildren().get(0).getData("internalName");
+                translatedText += "$";
+                translatedText += " = ";
+                translatedText += curr.getChildren().get(1).getData("symbol");
+                translatedText += "\n";
+                nextLineNum += 10;
+                break;
+            case 20:
+                translatedText += nextLineNum + " LET ";
+                varName = curr.getChildren().get(0).getChildren().get(0).getData("internalName");
+                if(syms.get(varName).get("type").equals("s"))
+                    varName += "$";
+                translatedText += varName;
+                translatedText += " = ";
+                varName = curr.getChildren().get(1).getChildren().get(0).getData("internalName");
+                if(syms.get(varName).get("type").equals("s"))
+                    varName += "$";
+                translatedText += varName;
+                translatedText += "\n";
+                nextLineNum += 10;
+                break;
+            case 21:
+                /*translatedText += nextLineNum + " LET ";
+                varName = curr.getChildren().get(0).getChildren().get(0).getData("internalName");
+                translatedText += varName;
+                translatedText += " = ";*/
+                translatedText += translateArithmetic(curr.getChildren().get(1), curr.getChildren().get(0).getChildren().get(0).getData("internalName"));
+                /*translatedText += "\n";
+                nextLineNum += 10;*/
+                break;
+            case 28:
+                String itLabel1 = String.format("[%d]", nextLabel++);
+                String itLabel2 = String.format("[%d]", nextLabel++);
+                /*translatedText += nextLineNum + " IF ";
+                translatedText += translate(curr.getChildren().get(1), procedureProgram);
+                translatedText += " THEN " + itLabel1 + "\n";
+                nextLineNum += 10;
+                translatedText += nextLineNum + " GOTO " + itLabel2 + "\n";
+                nextLineNum += 10;*/
+                translatedText += translateBool(curr.getChildren().get(1), itLabel1, itLabel2);
+                labelMap.put(itLabel1, nextLineNum);
+                translatedText += translate(curr.getChildren().get(3), procedureProgram);
+                labelMap.put(itLabel2, nextLineNum);
+                break;
+            case 29:
+                String iteLabel1 = String.format("[%d]", nextLabel++);
+                String iteLabel2 = String.format("[%d]", nextLabel++);
+                String iteLabel3 = String.format("[%d]", nextLabel++);
+                /*translatedText += nextLineNum + " IF ";
+                translatedText += translate(curr.getChildren().get(1), procedureProgram);
+                translatedText += " THEN " + iteLabel1 + "\n";
+                nextLineNum += 10;
+                translatedText += nextLineNum + " GOTO " + iteLabel2 + "\n";
+                nextLineNum += 10;*/
+                translatedText += translateBool(curr.getChildren().get(1), iteLabel1, iteLabel2);
+                labelMap.put(iteLabel1, nextLineNum);
+                translatedText += translate(curr.getChildren().get(3), procedureProgram);
+                translatedText += nextLineNum + " GOTO " + iteLabel3 + "\n";
+                nextLineNum += 10;
+                labelMap.put(iteLabel2, nextLineNum);
+                translatedText += translate(curr.getChildren().get(5), procedureProgram);
+                labelMap.put(iteLabel3, nextLineNum);
+                break;
+            case 30:
+                //while
+                String wLabel1 = String.format("[%d]", nextLabel++);
+                String wLabel2 = String.format("[%d]", nextLabel++);
+                String wLabel3 = String.format("[%d]", nextLabel++);
+                labelMap.put(wLabel1, nextLineNum);
+                /*translatedText += nextLineNum + " IF ";
+                translatedText += translate(curr.getChildren().get(1), procedureProgram);
+                translatedText += " THEN " + wLabel2 + "\n";
+                nextLineNum += 10;
+                translatedText += nextLineNum + " GOTO " + wLabel3 + "\n";
+                nextLineNum += 10;*/
+                translatedText += translateBool(curr.getChildren().get(1), wLabel2, wLabel3);
+                labelMap.put(wLabel2, nextLineNum);
+                translatedText += translate(curr.getChildren().get(2), procedureProgram);
+                translatedText += nextLineNum + " GOTO " + wLabel1 + "\n";
+                nextLineNum += 10;
+                labelMap.put(wLabel3, nextLineNum);
+                break;
+            case 31:
+                //for
+                String fLabel1 = String.format("[%d]", nextLabel++);
+                String fLabel2 = String.format("[%d]", nextLabel++);
+                String fLabel3 = String.format("[%d]", nextLabel++);
+                String fCodeName = curr.getChildren().get(1).getChildren().get(0).getData("internalName");
+                translatedText += nextLineNum + " LET " + fCodeName;
+                translatedText += " = 0\n";
+                nextLineNum += 10;
+                labelMap.put(fLabel1, nextLineNum);
+                translatedText += nextLineNum + " IF " + fCodeName;
+                translatedText += " < " + curr.getChildren().get(3).getChildren().get(0).getData("internalName");
+                translatedText += " THEN " + fLabel2 + "\n";
+                nextLineNum += 10;
+                translatedText += nextLineNum + " GOTO " + fLabel3 + "\n";
+                nextLineNum += 10;
+                labelMap.put(fLabel2, nextLineNum);
+                translatedText += translate(curr.getChildren().get(6), procedureProgram);
+
+                String fAStore1 = String.format("T%d", nextTVar++);
+                String fAStore2 = String.format("T%d", nextTVar++);
+                String fAStore3 = String.format("T%d", nextTVar++);
+                translatedText += nextLineNum + " LET " + fAStore2 + " = " + fCodeName + "\n";
+                nextLineNum += 10;
+                translatedText += nextLineNum + " LET " + fAStore3 + " = 1\n";
+                nextLineNum += 10;
+                translatedText += nextLineNum + " LET " + fAStore1 + " = " + fAStore2 + " + " + fAStore3 + "\n";
+                nextLineNum += 10;
+                translatedText += nextLineNum + " LET " + fCodeName + " = " + fAStore1 + "\n";
+                nextLineNum += 10;
+
+                translatedText += nextLineNum + " GOTO " + fLabel1 + "\n";
+                nextLineNum += 10;
+                labelMap.put(fLabel3, nextLineNum);
+                break;
+        }
 
         return translatedText;
     }
     private String replaceLabels(String intermediateTranslation){
-        return intermediateTranslation;
+        String[] lines = intermediateTranslation.split("\n");
+        for(int i = 0; i < lines.length; i++){
+            String s = lines[i];
+            if(s.contains("[")){
+                String temp = s.substring(0, s.indexOf("["));
+                String labelName = s.substring(s.indexOf("[")+1, s.length()-1);
+                if(labelName.charAt(0) == 'p'){
+                    temp += symTable.getTable().get(labelName).get("labelLocation");
+                }else{
+                    temp += labelMap.get("["+labelName+"]");
+                }
+                s = temp;
+            }
+            lines[i] = s;
+        }
+        String returnString = "";
+        for(String s: lines){
+            returnString += s + "\n";
+        }
+        return returnString;
+    }
+    private String translateBool(SyntaxNode curr, String trueLabel, String falseLabel){
+        String translatedCondition = "";
+        switch (identifyProd(curr)){
+            case 32:
+                translatedCondition += nextLineNum + " IF (" + curr.getChildren().get(1).getChildren().get(0).getData("internalName");
+                translatedCondition += " = ";
+                if(curr.getChildren().get(2).getChildren().get(0).getData("internalName")!=null)
+                    translatedCondition += curr.getChildren().get(2).getChildren().get(0).getData("internalName");
+                else
+                    translatedCondition += curr.getChildren().get(2).getChildren().get(0).getData("symbol");
+                translatedCondition += ") THEN " + trueLabel + "\n";
+                nextLineNum += 10;
+                translatedCondition += nextLineNum + " GOTO " + falseLabel + "\n";
+                nextLineNum += 10;
+                break;
+            case 33:
+                //bool bool
+                String eLabel1 = String.format("[%d]", nextLabel++);
+                String eLabel2 = String.format("[%d]", nextLabel++);
+                translatedCondition += translateBool(curr.getChildren().get(1), eLabel1, eLabel2);
+                labelMap.put(eLabel1, nextLineNum);
+                translatedCondition += translateBool(curr.getChildren().get(2), trueLabel, falseLabel);
+                labelMap.put(eLabel2, nextLineNum);
+                translatedCondition += translateBool(curr.getChildren().get(2), falseLabel, trueLabel);
+            case 34:
+                //num num
+                String nVar1 = String.format("T%d", nextTVar++);
+                String nVar2 = String.format("T%d", nextTVar++);
+                translatedCondition += translateArithmetic(curr.getChildren().get(1), nVar1);
+                translatedCondition += translateArithmetic(curr.getChildren().get(2), nVar2);
+                translatedCondition += nextLineNum + " IF ("+ nVar1;
+                translatedCondition += " = " + nVar2;
+                translatedCondition += ") THEN " + trueLabel + "\n";
+                nextLineNum += 10;
+                translatedCondition += nextLineNum + " GOTO " + falseLabel + "\n";
+                nextLineNum += 10;
+                break;
+            case 35:
+                translatedCondition += nextLineNum + " IF (" + curr.getChildren().get(0).getChildren().get(0).getData("internalName");
+                translatedCondition += " < ";
+                if(curr.getChildren().get(2).getChildren().get(0).getData("internalName")!=null)
+                    translatedCondition += curr.getChildren().get(2).getChildren().get(0).getData("internalName");
+                else
+                    translatedCondition += curr.getChildren().get(2).getChildren().get(0).getData("symbol");
+                translatedCondition += ") THEN " + trueLabel + "\n";
+                nextLineNum += 10;
+                translatedCondition += nextLineNum + " GOTO " + falseLabel + "\n";
+                nextLineNum += 10;
+                break;
+            case 36:
+                translatedCondition += nextLineNum + " IF (" + curr.getChildren().get(0).getChildren().get(0).getData("internalName");
+                translatedCondition += " > ";
+                if(curr.getChildren().get(2).getChildren().get(0).getData("internalName")!=null)
+                    translatedCondition += curr.getChildren().get(2).getChildren().get(0).getData("internalName");
+                else
+                    translatedCondition += curr.getChildren().get(2).getChildren().get(0).getData("symbol");
+                translatedCondition += ") THEN " + trueLabel + "\n";
+                nextLineNum += 10;
+                translatedCondition += nextLineNum + " GOTO " + falseLabel + "\n";
+                nextLineNum += 10;
+                break;
+            case 37:
+                // not
+                translatedCondition += translateBool(curr.getChildren().get(1), falseLabel, trueLabel);
+                break;
+            case 38:
+                // or
+                String oLabel = String.format("[%d]", nextLabel++);
+                String oCode1 = translateBool(curr.getChildren().get(1), trueLabel, oLabel);
+                labelMap.put(oLabel, nextLineNum);
+                String oCode2 = translateBool(curr.getChildren().get(2), trueLabel, falseLabel);
+                translatedCondition += oCode1 + oCode2;
+                break;
+            case 39:
+                // and
+                String aLabel = String.format("[%d]", nextLabel++);
+                String aCode1 = translateBool(curr.getChildren().get(1), aLabel, falseLabel);
+                labelMap.put(aLabel, nextLineNum);
+                String aCode2 = translateBool(curr.getChildren().get(2), trueLabel, falseLabel);
+                translatedCondition += aCode1 + aCode2;
+                break;
+        }
+        return  translatedCondition;
+    }
+    private String translateArithmetic(SyntaxNode curr, String storeName){
+        String translatedSum = "";
+        int production = identifyProd(curr);
+        switch (production){
+            case 22:
+                //translatedText += curr.getChildren().get(0).getChildren().get(0).getData("internalName");
+                translatedSum += nextLineNum + " LET " + storeName + " = " + curr.getChildren().get(0).getChildren().get(0).getData("internalName") + "\n";
+                nextLineNum += 10;
+                break;
+            case 23:
+                //translatedText += curr.getChildren().get(0).getData("symbol");
+                translatedSum += nextLineNum + " LET " + storeName + " = " + curr.getChildren().get(0).getData("symbol") + "\n";
+                nextLineNum += 10;
+                break;
+            case 24:
+                /*String sVar1 = String.format("T%d", nextTVar++);
+                String sVar2 = String.format("T%d", nextTVar++);
+                translatedText += translateArithmetic(curr.getChildren().get(0), sVar1, sVar2);*/
+                //String sVar1 = String.format("T%d", nextTVar++);
+                //String sVar2 = String.format("T%d", nextTVar++);
+                //translatedSum += ;
+                String sVar1 = String.format("T%d", nextTVar++);
+                translatedSum += translateArithmetic(curr.getChildren().get(0), sVar1);
+                translatedSum += nextLineNum + " LET " + storeName + " = " + sVar1 + "\n";
+                nextLineNum += 10;
+                break;
+            case 25:
+                /*translatedSum += "(";
+                translatedSum += translate(curr.getChildren().get(1), false);
+                translatedSum += " + ";
+                translatedSum += translate(curr.getChildren().get(2), false);
+                translatedSum += ")";*/
+                String aStore1 = String.format("T%d", nextTVar++);
+                String aStore2 = String.format("T%d", nextTVar++);
+                translatedSum += translateArithmetic(curr.getChildren().get(1), aStore1);
+                translatedSum += translateArithmetic(curr.getChildren().get(2), aStore2);
+                translatedSum += nextLineNum + " LET " + storeName + " = " + aStore1 + " + " + aStore2 + "\n";
+                nextLineNum += 10;
+                break;
+            case 26:
+                /*translatedSum += "(";
+                translatedSum += translate(curr.getChildren().get(1), false);
+                translatedSum += " - ";
+                translatedSum += translate(curr.getChildren().get(2), false);
+                translatedSum += ")";*/
+                String sStore1 = String.format("T%d", nextTVar++);
+                String sStore2 = String.format("T%d", nextTVar++);
+                translatedSum += translateArithmetic(curr.getChildren().get(1), sStore1);
+                translatedSum += translateArithmetic(curr.getChildren().get(2), sStore2);
+                translatedSum += nextLineNum + " LET " + storeName + " = " + sStore1 + " - " + sStore2 + "\n";
+                nextLineNum += 10;
+                break;
+            case 27:
+                /*translatedSum += "(";
+                translatedSum += translate(curr.getChildren().get(1), false);
+                translatedSum += " * ";
+                translatedSum += translate(curr.getChildren().get(2), false);
+                translatedSum += ")";*/
+                String mStore1 = String.format("T%d", nextTVar++);
+                String mStore2 = String.format("T%d", nextTVar++);
+                translatedSum += translateArithmetic(curr.getChildren().get(1), mStore1);
+                translatedSum += translateArithmetic(curr.getChildren().get(2), mStore2);
+                translatedSum += nextLineNum + " LET " + storeName + " = " + mStore1 + " * " + mStore2 + "\n";
+                nextLineNum += 10;
+                break;
+        }
+        return translatedSum;
     }
 
-    private Vector<String> valueCrawl(SyntaxNode curr, HashMap<String, String> vars, HashMap<String, SyntaxNode> procs, boolean possibleDead){
+    private Vector<String> valueCrawl(SyntaxNode curr, HashMap<String, String> vars, HashMap<String, SyntaxNode> procs){
         if(curr == null || curr.getNodeType().name().equals(SyntaxNode.type.TERMINAL.name()))
             return new Vector<>();
         Vector<String> ret = new Vector<>();
@@ -169,11 +534,11 @@ public class TreeCrawler {
             case 14:
             case 24:
                 for(SyntaxNode c: curr.getChildren()) {
-                    ret.addAll(valueCrawl(c, vars, procs, possibleDead));
+                    ret.addAll(valueCrawl(c, vars, procs));
                 }
                 boolean toggle = true;
                 for(SyntaxNode c: curr.getChildren()) {
-                    if (!curr.getChildren().get(0).getData("value").equals("+"))
+                    if (!c.getData("value").equals("+"))
                         toggle = false;
                 }
                 if(toggle)
@@ -181,14 +546,14 @@ public class TreeCrawler {
                 break;
             case 5:
             case 8:
-                ret.addAll(valueCrawl(curr.getChildren().get(0), vars, procs,possibleDead));
-                ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs,possibleDead));
+                ret.addAll(valueCrawl(curr.getChildren().get(0), vars, procs));
+                ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs));
                 if(curr.getChildren().get(0).getData("value").equals("+")&&
                         curr.getChildren().get(1).getData("value").equals("+"))
                     curr.addValue("+");
                 break;
                 case 6:
-                    ret.addAll(valueCrawl(curr.getChildren().get(2), vars, procs,possibleDead));
+                    ret.addAll(valueCrawl(curr.getChildren().get(2), vars, procs));
                     if(curr.getChildren().get(2).getData("value").equals("+"))
                         curr.addValue("+");
                     break;
@@ -198,9 +563,7 @@ public class TreeCrawler {
                 break;
             case 15:
                     curr.getChildren().get(1).addValue("+");
-                    //if(!possibleDead) {
-                        vars.put(curr.getChildren().get(1).getChildren().get(0).getData("internalName"), "+");
-                    //}
+                    vars.put(curr.getChildren().get(1).getChildren().get(0).getData("internalName"), "+");
                     ret.add(curr.getChildren().get(1).getChildren().get(0).getData("internalName"));
                     curr.addValue("+");
                     break;
@@ -214,7 +577,7 @@ public class TreeCrawler {
                     }
                     break;
                 case 17:
-                    ret.addAll(valueCrawl(procs.get(curr.getChildren().get(0).getData("internalName")), vars, procs, possibleDead));
+                    ret.addAll(valueCrawl(procs.get(curr.getChildren().get(0).getData("internalName")), vars, procs));
                     if(procs.get(curr.getChildren().get(0).getData("internalName")).getData("value").equals("+"))
                         curr.addValue("+");
                     break;
@@ -222,9 +585,7 @@ public class TreeCrawler {
                     break;
                 case 19:
                     curr.getChildren().get(0).addValue("+");
-                    //if(!possibleDead) {
-                        vars.put(curr.getChildren().get(0).getChildren().get(0).getData("internalName"), "+");
-                    //}
+                    vars.put(curr.getChildren().get(0).getChildren().get(0).getData("internalName"), "+");
                     ret.add(curr.getChildren().get(0).getChildren().get(0).getData("internalName"));
                     curr.addValue("+");
                     break;
@@ -244,12 +605,11 @@ public class TreeCrawler {
                     }
                     break;
                 case 21:
-                    ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs, possibleDead));
+                    ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs));
                     if(curr.getChildren().get(1).getData("value").equals("+")){
                         curr.getChildren().get(0).addValue("+");
                         ret.add(curr.getChildren().get(0).getChildren().get(0).getData("internalName"));
-                        //if(!possibleDead)
-                            vars.put(curr.getChildren().get(0).getChildren().get(0).getData("internalName"), "+");
+                        vars.put(curr.getChildren().get(0).getChildren().get(0).getData("internalName"), "+");
                         curr.addValue("+");
                     }else{
                         treeRoot.error = true;
@@ -265,28 +625,28 @@ public class TreeCrawler {
                 case 25:
             case 26:
             case 27:
-                ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs, possibleDead));
-                ret.addAll(valueCrawl(curr.getChildren().get(2), vars, procs, possibleDead));
+                ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs));
+                ret.addAll(valueCrawl(curr.getChildren().get(2), vars, procs));
                 if(curr.getChildren().get(1).getData("value").equals("+")&&curr.getChildren().get(2).getData("value").equals("+")){
                     curr.addValue("+");
                 }
                 break;
             case 28:
             case 30:
-                ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs, possibleDead));
+                ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs));
                 HashMap<String, String> varsTemp = (HashMap<String, String>) vars.clone();
-                ret.addAll(valueCrawl(curr.getChildren().get(2), varsTemp, procs, true));
+                ret.addAll(valueCrawl(curr.getChildren().get(2), varsTemp, procs));
                 if(curr.getChildren().get(2).getData("value").equals("+"))
                     curr.addValue("+");
                 break;
                 case 29:
                     //if-then-else---------------------------------------------------------------------------------------
-                    ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs, possibleDead));
+                    ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs));
                     Vector<String> thenCode, elseCode;
                     varsTemp = (HashMap<String, String>) vars.clone();
-                    thenCode = valueCrawl(curr.getChildren().get(3), varsTemp, procs, true);
+                    thenCode = valueCrawl(curr.getChildren().get(3), varsTemp, procs);
                     varsTemp = (HashMap<String, String>) vars.clone();
-                    elseCode = valueCrawl(curr.getChildren().get(5), varsTemp, procs, true);
+                    elseCode = valueCrawl(curr.getChildren().get(5), varsTemp, procs);
                     if(curr.getChildren().get(1).getData("value").equals("+")&&
                             curr.getChildren().get(3).getData("value").equals("+")&&
                             curr.getChildren().get(5).getData("value").equals("+")){
@@ -303,14 +663,12 @@ public class TreeCrawler {
                 SyntaxNode var1, var2;
                 var1 = curr.getChildren().get(1).getChildren().get(0);
                 var2 = curr.getChildren().get(3).getChildren().get(0);
-                //if(!possibleDead) {
-                    vars.put(var1.getData("internalName"), "+");
-                //}
+                vars.put(var1.getData("internalName"), "+");
                 curr.getChildren().get(1).addValue("+");
                 curr.getChildren().get(2).addValue("+");
                 curr.getChildren().get(4).addValue("+");
                 curr.getChildren().get(5).addValue("+");
-                ret.addAll(valueCrawl(curr.getChildren().get(6), vars, procs, true));
+                ret.addAll(valueCrawl(curr.getChildren().get(6), vars, procs));
                 if(vars.get(var1.getData("internalName")).equals("+")&&
                         vars.get(var2.getData("internalName")).equals("+")&&
                         curr.getChildren().get(6).getData("value").equals("+")){
@@ -320,19 +678,28 @@ public class TreeCrawler {
                 break;
                 case 32:
                     //rest are booleans
-                    if(vars.get(curr.getChildren().get(1).getChildren().get(0).getData("internalName")).equals("+")&&
-                            vars.get(curr.getChildren().get(2).getChildren().get(0).getData("internalName")).equals("+")){
-                        curr.getChildren().get(1).addValue("+");
-                        curr.getChildren().get(2).addValue("+");
-                        curr.addValue("+");
+                    if (vars.get(curr.getChildren().get(2).getChildren().get(0).getData("internalName")) != null) {
+                        if (vars.get(curr.getChildren().get(1).getChildren().get(0).getData("internalName")).equals("+") &&
+                                vars.get(curr.getChildren().get(2).getChildren().get(0).getData("internalName")).equals("+")) {
+                            curr.getChildren().get(1).addValue("+");
+                            curr.getChildren().get(2).addValue("+");
+                            curr.addValue("+");
+                        }
+                    }else{
+                        if (vars.get(curr.getChildren().get(1).getChildren().get(0).getData("internalName")).equals("+") &&
+                                curr.getChildren().get(2).getChildren().get(0).getData("symbol").equals("NUMEXPR")) {
+                            curr.getChildren().get(1).addValue("+");
+                            curr.getChildren().get(2).addValue("+");
+                            curr.addValue("+");
+                        }
                     }
                     break;
                 case 33:
             case 34:
             case 38:
             case 39:
-                ret.addAll(valueCrawl(curr.getChildren().get(1), vars,procs,possibleDead));
-                ret.addAll(valueCrawl(curr.getChildren().get(2), vars,procs,possibleDead));
+                ret.addAll(valueCrawl(curr.getChildren().get(1), vars,procs));
+                ret.addAll(valueCrawl(curr.getChildren().get(2), vars,procs));
                 if(curr.getChildren().get(2).getData("value").equals("+")&&
                         curr.getChildren().get(1).getData("value").equals("+")){
                     curr.addValue("+");
@@ -342,8 +709,8 @@ public class TreeCrawler {
                 break;
             case 35:
             case 36:
-                ret.addAll(valueCrawl(curr.getChildren().get(0), vars,procs,possibleDead));
-                ret.addAll(valueCrawl(curr.getChildren().get(2), vars,procs,possibleDead));
+                ret.addAll(valueCrawl(curr.getChildren().get(0), vars,procs));
+                ret.addAll(valueCrawl(curr.getChildren().get(2), vars,procs));
                 if(vars.get(curr.getChildren().get(2).getChildren().get(0).getData("internalName")).equals("+")&&
                         vars.get(curr.getChildren().get(0).getChildren().get(0).getData("internalName")).equals("+")){
                     curr.addValue("+");
@@ -352,7 +719,7 @@ public class TreeCrawler {
                 }
                 break;
             case 37:
-                ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs, possibleDead));
+                ret.addAll(valueCrawl(curr.getChildren().get(1), vars, procs));
                 if(curr.getChildren().get(1).getData("value").equals("+")) {
                     curr.addValue("+");
                     curr.getChildren().get(1).addValue("+");

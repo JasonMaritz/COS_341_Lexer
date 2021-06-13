@@ -1,4 +1,39 @@
-Trying to assign a variable to another variable without a value
-Trying to assign a value-less calculation to a variable
-Trying to assign a value-less calculation to a variable
-Trying to output a variable without a value
+10 INPUT ""; V1
+20 IF (V1 = 0) THEN 40
+30 GOTO 50
+40 STOP
+50 IF (V1 = 1) THEN 70
+60 GOTO 100
+70 LET V2 = 1
+80 PRINT V2
+90 STOP
+100 IF (V1 = 2) THEN 120
+110 GOTO 160
+120 LET V2 = 1
+130 PRINT V2
+140 PRINT V2
+150 STOP
+160 LET V3 = 1
+170 LET V4 = 1
+180 PRINT V3
+190 PRINT V4
+200 LET T2 = V1
+210 LET T3 = 2
+220 LET T1 = T2 - T3
+230 LET V1 = T1
+240 LET V5 = 0
+250 IF V5 < V1 THEN 270
+260 GOTO 390
+270 LET T5 = V3
+280 LET T6 = V4
+290 LET T4 = T5 + T6
+300 LET V6 = T4
+310 LET V3 = V4
+320 LET V4 = V6
+330 PRINT V6
+340 LET T8 = V5
+350 LET T9 = 1
+360 LET T7 = T8 + T9
+370 LET V5 = T7
+380 GOTO 250
+390 END

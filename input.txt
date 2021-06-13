@@ -1,26 +1,26 @@
-b=1;
-
-c=2;
-
-input(d);
-
-if (eq(d,b)) 
-
-then { e=7;
-       
-       if (eq(d,e)) then { x=9 } else { input(x) } ;
-
-       a = add(x,c)        
-     } 
-
-else { f=8; 
- 
-       if (eq(d,f)) then { input(x) } else { x=e } ;
-
-       a = mult(d,x)       
-
-     };
-
-x = sub(x,a) ;
-
-output(x)
+input(num);
+if(eq(num, 0)) then{
+    halt
+};
+if(eq(num, 1)) then{
+    o = 1;
+    output(o);
+    halt
+};
+if(eq(num, 2)) then{
+    o = 1;
+    output(o);
+    output(o);
+    halt
+};
+a = 1;
+b = 1;
+output(a);
+output(b);
+num = sub(num, 2);
+for(i=0; i<num; i = add(i, 1)){
+    c = add(a, b);
+    a = b;
+    b = c;
+    output(c)
+}

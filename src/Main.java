@@ -57,7 +57,7 @@ public class Main {
                 return;
             }
             //----------------------------------------------------------------------------------------------------------
-            output = parser.getOutput().toString(0);
+            output += scoper.translate();
             writer.append(output);
             writer.close();
         }catch (Exception e){
